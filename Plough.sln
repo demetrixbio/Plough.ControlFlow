@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26124.0
+MinimumVisualStudioVersion = 15.0.26124.0
+
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Plough.ControlFlow", "src\Plough.ControlFlow\Plough.ControlFlow.fsproj", "{4CCC4FF3-58DA-4850-9CBC-C2F9CB1E24B4}"
+EndProject
+
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4CCC4FF3-58DA-4850-9CBC-C2F9CB1E24B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CCC4FF3-58DA-4850-9CBC-C2F9CB1E24B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CCC4FF3-58DA-4850-9CBC-C2F9CB1E24B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CCC4FF3-58DA-4850-9CBC-C2F9CB1E24B4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
