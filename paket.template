@@ -1,0 +1,17 @@
+type file
+id Plough
+version 0.0.0
+authors Demetrix
+owners Demetrix
+title Plough
+description
+  Plough is a library that can be used to quicker develop back-end F# functionality.
+licenseExpression Apache-2.0
+repositoryUrl https://github.com/demetrixbio/Plough
+copyright Demetrix 2021
+tags fsharp plough
+dependencies
+  FSharp.Core >= 5.0
+  Ply ~> 0.3.1
+files
+  src/Plough.ControlFlow/bin/Release ==> lib
