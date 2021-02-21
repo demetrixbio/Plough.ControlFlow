@@ -11,5 +11,6 @@ group test
     source https://nuget.org/api/v2
     storage:none
 
+    nuget Microsoft.NET.Test.Sdk
     nuget xunit
     nuget xunit.runner.visualstudio

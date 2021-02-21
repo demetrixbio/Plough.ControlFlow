@@ -16,18 +16,27 @@ Target.initEnvironment ()
 Target.create "Clean" (fun _ ->
     !! "src/**/bin"
     ++ "src/**/obj"
+    ++ "test/**/bin"
+    ++ "test/**/obj"
     |> Shell.cleanDirs 
 )
 
 Target.create "Build" (fun _ ->
     !! "src/**/*.*proj"
+    ++ "test/**/*.*proj"
     |> Seq.iter (DotNet.build id)
+)
+
+Target.create "Test" (fun _ ->
+  !! "test/**/*.*proj"
+  |> Seq.iter (DotNet.test id)
 )
 
 Target.create "All" ignore
 
 "Clean"
   ==> "Build"
+  ==> "Test"
   ==> "All"
 
 Target.runOrDefault "All"
