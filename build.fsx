@@ -21,6 +21,12 @@ Target.create "Clean" (fun _ ->
     |> Shell.cleanDirs 
 )
 
+Target.create "Restore" (fun _ ->
+    !! "src/**/*.*proj"
+    ++ "test/**/*.*proj"
+    |> Seq.iter (DotNet.restore id)
+)
+
 Target.create "Build" (fun _ ->
     !! "src/**/*.*proj"
     ++ "test/**/*.*proj"
@@ -32,9 +38,14 @@ Target.create "Test" (fun _ ->
   |> Seq.iter (DotNet.test id)
 )
 
+Target.create "Publish" (fun _ ->
+  
+)
+
 Target.create "All" ignore
 
 "Clean"
+  ==> "Restore"
   ==> "Build"
   ==> "Test"
   ==> "All"
