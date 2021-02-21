@@ -349,6 +349,9 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
+# Rider working folder
+.idea/
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
