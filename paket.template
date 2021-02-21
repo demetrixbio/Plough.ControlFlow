@@ -5,8 +5,9 @@ authors Demetrix
 owners Demetrix
 title Plough
 description
-  Plough is a library that can be used to quicker develop back-end F# functionality.
+  Plough is a library that can be used to quickly develop back-end F# functionality.
 licenseExpression Apache-2.0
+licenseUrl https://licenses.nuget.org/Apache-2.0
 repositoryUrl https://github.com/demetrixbio/Plough
 copyright Demetrix 2021
 tags fsharp plough
