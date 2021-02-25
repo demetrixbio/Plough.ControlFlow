@@ -1,6 +1,6 @@
 ﻿namespace Plough.ControlFlow
 
-#if FABLE_COMPILER
+#if !FABLE_COMPILER
 open System.Threading.Tasks
 open FSharp.Control.Tasks
 #endif
@@ -210,7 +210,7 @@ module Either =
 
     /// Converts a Result<Task<_>,_> to an Task<Result<_,_>>
     let sequenceTask (resAsync : Either<Task<'a>>) : Task<Either<'a>> =
-    #if FABLE_COMPILER
+    #if !FABLE_COMPILER
         task {
     #else
         async {

@@ -3,7 +3,7 @@ namespace Plough.ControlFlow
 open System.Threading.Tasks
 open FSharp.Control.Tasks.Affine
 
-#if FABLE_COMPILER
+#if !FABLE_COMPILER
     type Task<'T> = System.Threading.Tasks.Task<'T>
 #else
     type Task<'T> = Async<'T>
@@ -12,7 +12,7 @@ open FSharp.Control.Tasks.Affine
 
 [<RequireQualifiedAccess>]
 module Task =
-    #if FABLE_COMPILER
+    #if !FABLE_COMPILER
     let singleton value = value |> Task.FromResult
 
     let bind (f : 'a -> Task<'b>) (x : Task<'a>) =

@@ -12,7 +12,7 @@ module TaskOptionCE =
 
         member inline _.ReturnFrom(taskResult : Task<Option<_>>) : Ply<Option<_>> = uply.ReturnFrom taskResult
 
-        #if FABLE_COMPILER
+        #if !FABLE_COMPILER
         member inline this.ReturnFrom(asyncResult : Async<Option<_>>) : Ply<Option<_>> =
             this.ReturnFrom(Async.StartAsTask asyncResult)
         #endif
@@ -29,7 +29,7 @@ module TaskOptionCE =
 
             uply.Bind(taskResult, binder')
 
-        #if FABLE_COMPILER
+        #if !FABLE_COMPILER
         member inline this.Bind(asyncResult : Async<Option<_>>, binder : 'T -> Ply<Option<_>>) : Ply<Option<_>> =
             this.Bind(Async.StartAsTask asyncResult, binder)
         #endif

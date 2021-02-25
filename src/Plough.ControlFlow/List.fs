@@ -27,7 +27,7 @@ module List =
         let mutable state = Either.succeed []
         let mutable index = 0
         let xs = xs |> List.toArray
-        #if FABLE_COMPILER
+        #if !FABLE_COMPILER
         task {
         #else
         async {

@@ -101,7 +101,7 @@ module TaskEitherCE =
         /// </summary>
         member inline _.Source(task : Task<Either<'a>>) : Task<Either<'a>> = task
         
-        #if FABLE_COMPILER
+        #if !FABLE_COMPILER
         /// <summary>
         /// Method lets us transform data types into our internal representation.
         /// </summary>
@@ -131,7 +131,7 @@ module TaskEitherCEExtensions =
         member inline _.Source(choice : Choice<'a, FailureMessage>) : Task<Either<'a>> =
             choice |> Either.ofChoice id |> Task.singleton
 
-        #if FABLE_COMPILER
+        #if !FABLE_COMPILER
         /// <summary>
         /// Method lets us transform data types into our internal representation.
         /// </summary>
@@ -147,11 +147,11 @@ module TaskEitherCEExtensions =
         member inline _.Source(task : Task<'a>) : Task<Either<'a>> =
             task |> Task.map Either.succeed
 
-        #if FABLE_COMPILER
+        #if !FABLE_COMPILER
         /// <summary>
         /// Method lets us transform data types into our internal representation.
         /// </summary>
-        member inline _.Source(t : Task) : Task<Either<unit>> =
+        member inline _.Source(t : System.Threading.Tasks.Task) : Task<Either<unit>> =
             task { return! t } |> Task.map Either.succeed
         #endif
         

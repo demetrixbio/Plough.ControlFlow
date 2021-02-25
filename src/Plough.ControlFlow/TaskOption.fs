@@ -1,6 +1,6 @@
 namespace Plough.ControlFlow
 
-#if FABLE_COMPILER 
+#if !FABLE_COMPILER 
 open FSharp.Control.Tasks.Affine
 #endif
 
@@ -10,7 +10,7 @@ module TaskOption =
     let inline map f ar = Task.map (Option.map f) ar
 
     let bind f (ar : Task<_>) =
-        #if FABLE_COMPILER 
+        #if !FABLE_COMPILER 
         task {
         #else
         async {

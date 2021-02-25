@@ -1,6 +1,6 @@
 ﻿namespace Plough.ControlFlow
 
-#if FABLE_COMPILER 
+#if !FABLE_COMPILER 
 open FSharp.Control.Tasks.Affine
 #endif
 
@@ -21,7 +21,7 @@ module TaskEither =
         Task.map (Either.map f) te
 
     let bind (f : 'a -> TaskEither<'b>) (te : TaskEither<'a>) : TaskEither<'b> =
-    #if FABLE_COMPILER
+    #if !FABLE_COMPILER
         task {
     #else
         async {
@@ -46,7 +46,7 @@ module TaskEither =
         |> Task.map Either.succeed
     
     let ofAsync (aAsync : Async<'a>) : TaskEither<'a> =
-    #if FABLE_COMPILER
+    #if !FABLE_COMPILER
         aAsync
         |> Async.Catch
         |> Async.StartAsTask
