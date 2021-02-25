@@ -3,6 +3,12 @@ namespace Plough.ControlFlow
 open System.Threading.Tasks
 open FSharp.Control.Tasks.Affine
 
+#if FABLE_COMPILER
+    type Task<'T> = Async<'T>
+#else
+    type Task<'T> = System.Threading.Tasks.Task<'T>
+#endif
+
 [<RequireQualifiedAccess>]
 module Task =
     let singleton value = value |> Task.FromResult
