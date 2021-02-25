@@ -1,7 +1,6 @@
 ﻿namespace Plough.ControlFlow
 
 open System
-open System.Threading.Tasks
 open FSharp.Control.Tasks.Affine.Unsafe
 open FSharp.Control.Tasks.Affine
 open Ply
@@ -101,12 +100,14 @@ module TaskEitherCE =
         /// See https://stackoverflow.com/questions/35286541/why-would-you-use-builder-source-in-a-custom-computation-expression-builder
         /// </summary>
         member inline _.Source(task : Task<Either<'a>>) : Task<Either<'a>> = task
-
+        
+        #if FABLE_COMPILER
         /// <summary>
         /// Method lets us transform data types into our internal representation.
         /// </summary>
         member inline _.Source(result : Async<Either<'a>>) : Task<Either<'a>> = result |> Async.StartAsTask
-
+        #endif
+        
     let taskEither = TaskEitherBuilder()
 
 // Having members as extensions gives them lower priority in
@@ -130,6 +131,7 @@ module TaskEitherCEExtensions =
         member inline _.Source(choice : Choice<'a, FailureMessage>) : Task<Either<'a>> =
             choice |> Either.ofChoice id |> Task.singleton
 
+        #if FABLE_COMPILER
         /// <summary>
         /// Method lets us transform data types into our internal representation.
         /// </summary>
@@ -137,6 +139,7 @@ module TaskEitherCEExtensions =
             asyncComputation
             |> Async.StartAsTask
             |> Task.map Either.succeed
+        #endif
 
         /// <summary>
         /// Method lets us transform data types into our internal representation.
@@ -144,8 +147,11 @@ module TaskEitherCEExtensions =
         member inline _.Source(task : Task<'a>) : Task<Either<'a>> =
             task |> Task.map Either.succeed
 
+        #if FABLE_COMPILER
         /// <summary>
         /// Method lets us transform data types into our internal representation.
         /// </summary>
         member inline _.Source(t : Task) : Task<Either<unit>> =
             task { return! t } |> Task.map Either.succeed
+        #endif
+        

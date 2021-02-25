@@ -1,7 +1,5 @@
 namespace Plough.ControlFlow
 
-open FSharp.Control.Tasks.Affine
-
 [<RequireQualifiedAccess>]
 module TaskEitherOption =
     let map (f : 'a -> 'b) (tro : TaskEither<'a option>) : TaskEither<'b option> = TaskEither.map (Option.map f) tro
@@ -21,7 +19,7 @@ module TaskEitherOption =
         TaskEither.map3 (Option.map3 f) x y z
 
     let retn (value : 'a) : TaskEither<'a option> =
-        task { return Either.succeed (Some value) }
+        Either.succeed (Some value) |> Task.singleton
 
     let apply (f : TaskEither<('a -> 'b) option>) (x : TaskEither<'a option>) : TaskEither<'b option> =
         map2 (fun f x -> f x) f x

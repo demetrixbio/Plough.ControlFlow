@@ -1,26 +1,31 @@
 ﻿namespace Plough.ControlFlow
 
-open System.Threading.Tasks
+#if FABLE_COMPILER 
 open FSharp.Control.Tasks.Affine
+#endif
 
 type TaskEither<'a> = Task<Either<'a>>
 
 [<RequireQualifiedAccess>]
 module TaskEither =
     let fail (x : FailureMessage) : TaskEither<'a> =
-        x |> Either.fail |> Task.FromResult
+        x |> Either.fail |> Task.singleton
     
     let succeed (x : 'a) : TaskEither<'a> =
-        x |> Either.succeed |> Task.FromResult 
+        x |> Either.succeed |> Task.singleton
     
     let warn (msg : string) (x : 'a) : TaskEither<'a> =
-        Either.warn msg x |> Task.FromResult
+        Either.warn msg x |> Task.singleton
     
     let map (f : 'a -> 'b) (te : TaskEither<'a>) : TaskEither<'b> =
         Task.map (Either.map f) te
 
     let bind (f : 'a -> TaskEither<'b>) (te : TaskEither<'a>) : TaskEither<'b> =
+    #if FABLE_COMPILER
         task {
+    #else
+        async {
+    #endif
             match! te with
             | Error e ->
                 return Error e
@@ -41,10 +46,14 @@ module TaskEither =
         |> Task.map Either.succeed
     
     let ofAsync (aAsync : Async<'a>) : TaskEither<'a> =
+    #if FABLE_COMPILER
         aAsync
         |> Async.Catch
         |> Async.StartAsTask
         |> Task.map (Either.ofChoice ExceptionFailure)
+    #else
+        aAsync |> ofTask
+    #endif
 
     let retn (x : 'a) : TaskEither<'a> =
         Either.succeed x |> Task.singleton

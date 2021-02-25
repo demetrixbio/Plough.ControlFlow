@@ -1,7 +1,9 @@
 ﻿namespace Plough.ControlFlow
 
+#if FABLE_COMPILER
 open System.Threading.Tasks
 open FSharp.Control.Tasks
+#endif
 
 type FailureMessage =
     | Unknown of string
@@ -208,7 +210,11 @@ module Either =
 
     /// Converts a Result<Task<_>,_> to an Task<Result<_,_>>
     let sequenceTask (resAsync : Either<Task<'a>>) : Task<Either<'a>> =
+    #if FABLE_COMPILER
         task {
+    #else
+        async {
+    #endif
             match resAsync with
             | Ok promise ->
                 let! x = promise.Data

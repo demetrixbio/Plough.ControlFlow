@@ -1,7 +1,6 @@
 namespace Plough.ControlFlow
 
 open System
-open System.Threading.Tasks
 open FSharp.Control.Tasks.Affine.Unsafe
 open FSharp.Control.Tasks.Affine
 open Ply
@@ -13,8 +12,10 @@ module TaskOptionCE =
 
         member inline _.ReturnFrom(taskResult : Task<Option<_>>) : Ply<Option<_>> = uply.ReturnFrom taskResult
 
+        #if FABLE_COMPILER
         member inline this.ReturnFrom(asyncResult : Async<Option<_>>) : Ply<Option<_>> =
             this.ReturnFrom(Async.StartAsTask asyncResult)
+        #endif
 
         member inline _.ReturnFrom(result : Option<_>) : Ply<Option<_>> = uply.Return result
 
@@ -28,8 +29,10 @@ module TaskOptionCE =
 
             uply.Bind(taskResult, binder')
 
+        #if FABLE_COMPILER
         member inline this.Bind(asyncResult : Async<Option<_>>, binder : 'T -> Ply<Option<_>>) : Ply<Option<_>> =
             this.Bind(Async.StartAsTask asyncResult, binder)
+        #endif
 
         member inline this.Bind(result : Option<_>, binder : 'T -> Ply<Option<_>>) : Ply<Option<_>> =
             let result = result |> Task.singleton
