@@ -46,6 +46,7 @@ Target.create "Pack" (fun _ ->
 
     Paket.pack(fun p ->
         { p with
+            ToolType = ToolType.CreateCLIToolReference()
             BuildConfig = "Release"
             OutputPath = "bin"
             MinimumFromLockFile = true
