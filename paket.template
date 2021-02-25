@@ -16,5 +16,5 @@ dependencies
   Ply ~> 0.3.1
 files
   src/Plough.ControlFlow/bin/Release ==> lib
-  src/**/*.fsproj ==> fable
-  src/**/*.fs ==> fable
+  src/Plough.ControlFlow/*.fsproj ==> fable
+  src/Plough.ControlFlow/*.fs ==> fable
