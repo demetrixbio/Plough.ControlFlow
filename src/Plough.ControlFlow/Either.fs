@@ -208,6 +208,8 @@ module Either =
     let teeError (f : FailureMessage -> unit) (result : Either<'a>) : Either<'a> =
         teeErrorIf (fun _ -> true) f result
 
+    
+    
     /// Converts a Result<Task<_>,_> to an Task<Result<_,_>>
     let sequenceTask (resAsync : Either<Task<'a>>) : Task<Either<'a>> =
     #if !FABLE_COMPILER

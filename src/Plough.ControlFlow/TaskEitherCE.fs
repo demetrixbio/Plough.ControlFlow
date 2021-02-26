@@ -1,8 +1,10 @@
 ﻿namespace Plough.ControlFlow
 
 open System
+#if !FABLE_COMPILER
 open FSharp.Control.Tasks.Affine.Unsafe
 open FSharp.Control.Tasks.Affine
+#endif
 open Ply
 
 [<AutoOpen>]
@@ -10,6 +12,16 @@ module TaskEitherCE =
 
     type TaskEitherBuilder() =
 
+        member inline _.MergeSources(t1 : Task<Either<'a>>, t2 : Task<Either<'b>>) = TaskEither.zip t1 t2
+        
+        /// <summary>
+        /// Method lets us transform data types into our internal representation. This is the identity method to recognize the self type.
+        ///
+        /// See https://stackoverflow.com/questions/35286541/why-would-you-use-builder-source-in-a-custom-computation-expression-builder
+        /// </summary>
+        member inline _.Source(task : Task<Either<'a>>) : Task<Either<'a>> = task
+        
+        #if !FABLE_COMPILER
         member inline _.Return(value : 'a) : Ply<Either<'a>> =
             uply.Return(either.Return value)
 
@@ -90,22 +102,97 @@ module TaskEitherCE =
 
         member inline this.BindReturn(x : Task<Either<'a>>, f) =
             this.Bind(x, (fun x -> this.Return(f x)))
-
-        member inline _.MergeSources(t1 : Task<Either<'a>>, t2 : Task<Either<'b>>) = TaskEither.zip t1 t2
+            
         member inline _.Run(f : unit -> Ply<'m>) = task.Run f
-
-        /// <summary>
-        /// Method lets us transform data types into our internal representation. This is the identity method to recognize the self type.
-        ///
-        /// See https://stackoverflow.com/questions/35286541/why-would-you-use-builder-source-in-a-custom-computation-expression-builder
-        /// </summary>
-        member inline _.Source(task : Task<Either<'a>>) : Task<Either<'a>> = task
         
-        #if !FABLE_COMPILER
         /// <summary>
         /// Method lets us transform data types into our internal representation.
         /// </summary>
         member inline _.Source(result : Async<Either<'a>>) : Task<Either<'a>> = result |> Async.StartAsTask
+        
+        #else
+        member inline _.Return(value : 'a) : Async<Either<'a>> =
+            async.Return(either.Return value)
+
+        member inline _.ReturnFrom(taskEither : TaskEither<'a>) : Async<Either<'a>> =
+            async.ReturnFrom taskEither
+
+        member inline _.Zero() : Async<Either<unit>> = async.Return <| either.Zero()
+
+        member inline _.Bind(taskEither : TaskEither<'a>, binder : 'a -> Async<Either<'b>>) : Async<Either<'b>> =
+            async {
+                match! taskEither with
+                | Error e ->
+                    return Error e
+                | Ok { Data = d; Warnings = w1 } ->
+                    match! binder d with
+                    | Error e -> return Error e
+                    | Ok { Data = d2; Warnings = w2 } -> return Ok { Data = d2; Warnings = w1 @ w2 }
+            }
+
+        member inline _.Delay(generator : unit -> Async<Either<'a>>) : unit -> Async<Either<'a>> =
+            fun () -> async.Delay(generator)
+
+        member inline _.Combine(computation1 : Async<Either<unit>>, computation2 : unit -> Async<Either<'a>>) : Async<Either<'a>> =
+            async {
+                match! computation1 with
+                | Error e -> return Error e
+                | Ok  { Data = _; Warnings = w1 } ->
+                    match! computation2 () with
+                    | Error e -> return Error e
+                    | Ok { Data = d2; Warnings = w2 } -> return Ok { Data = d2; Warnings = w1 @ w2 }
+            }
+
+        member inline _.TryWith(computation : unit -> Async<Either<'a>>, handler : exn -> Async<Either<'a>>) : Async<Either<'a>> =
+            async.TryWith(computation(), handler)
+
+        member inline _.TryFinally(computation : unit -> Async<Either<'a>>, compensation : unit -> unit) : Async<Either<'a>> =
+            async.TryFinally(computation(), compensation)
+
+        member inline _.Using(resource : 'a :> IDisposable, binder : 'a -> Async<Either<'b>>) : Async<Either<'b>> =
+            async.Using(resource, binder)
+
+        member _.While(guard : unit -> bool, computation : unit -> Async<Either<unit>>) : Async<Either<unit>> =
+            async {
+                let mutable fin, result = false, Either.succeed ()
+
+                while not fin && guard () do
+                    match! computation () with
+                    | Ok { Data = (); Warnings = w1 } ->
+                        match result with
+                        | Error _ -> ()
+                        | Ok { Data = (); Warnings = w2 } ->
+                            result <- Ok { Data = (); Warnings = w1 @ w2 }
+                    | Error _ as e ->
+                        result <- e
+                        fin <- true
+
+                return result
+            }
+
+        member _.For(sequence : #seq<'a>, binder : 'a -> Async<Either<unit>>) : Async<Either<unit>> =
+            async {
+                use enumerator = sequence.GetEnumerator()
+                let mutable fin, result = false, Either.succeed ()
+
+                while not fin && enumerator.MoveNext() do
+                    match! binder enumerator.Current with
+                    | Ok { Data = (); Warnings = w1 } ->
+                        match result with
+                        | Error _ -> ()
+                        | Ok { Data = (); Warnings = w2 } ->
+                            result <- Ok { Data = (); Warnings = w1 @ w2 }
+                    | Error _ as e ->
+                        result <- e
+                        fin <- true
+
+                return result
+            }
+
+        member inline this.BindReturn(x : Task<Either<'a>>, f) =
+            this.Bind(x, (fun x -> this.Return(f x)))
+            
+        member inline _.Run(f : unit -> Async<'m>) = async.ReturnFrom (f())
         #endif
         
     let taskEither = TaskEitherBuilder()

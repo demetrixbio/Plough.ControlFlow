@@ -7,7 +7,6 @@ open FSharp.Control.Tasks.Affine
     type Task<'T> = System.Threading.Tasks.Task<'T>
 #else
     type Task<'T> = Async<'T>
-    type Ply<'T> = Async<'T>
 #endif
 
 [<RequireQualifiedAccess>]
