@@ -4,6 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Task.fs" />
+    <Compile Include="TaskOp.fs" />
     <Compile Include="Either.fs" />
     <Compile Include="EitherCE.fs" />
     <Compile Include="EitherOp.fs" />
@@ -12,8 +14,6 @@
     <Compile Include="EitherOption.fs" />
     <Compile Include="EitherOptionCE.fs" />
     <Compile Include="EitherOptionOp.fs" />
-    <Compile Include="Task.fs" />
-    <Compile Include="TaskOp.fs" />
     <Compile Include="TaskEither.fs" />
     <Compile Include="TaskEitherCE.fs" />
     <Compile Include="TaskEitherOp.fs" />

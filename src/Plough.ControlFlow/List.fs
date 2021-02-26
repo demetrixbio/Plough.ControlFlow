@@ -27,8 +27,11 @@ module List =
         let mutable state = Either.succeed []
         let mutable index = 0
         let xs = xs |> List.toArray
-
+        #if !FABLE_COMPILER
         task {
+        #else
+        async {
+        #endif
             while state |> Either.isSuccess && index < xs.Length do
                 let! r = xs |> Array.item index |> f
                 index <- index + 1
