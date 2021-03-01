@@ -163,30 +163,3 @@ module TaskEither =
     let zip (x1 : TaskEither<'a>) (x2 : TaskEither<'b>) : TaskEither<'a * 'b> =
         Task.zip x1 x2
         |> Task.map (fun (r1, r2) -> Either.zip r1 r2)
-
-
-[<AbstractClass>]
-type TaskEither() =
-    static member inline private collect (fold, acc : #seq<'a> -> 'a -> #seq<'a>, zero : #seq<'a>, r : #seq<TaskEither<'a>>) : TaskEither<#seq<'a>> =
-        fold (TaskEither.map2 acc) (TaskEither.succeed zero) r
-        
-    static member inline private collectMany (fold, acc : #seq<'a> -> #seq<'a> -> #seq<'a>, zero : #seq<'a>, r : #seq<TaskEither<#seq<'a>>>) : TaskEither<#seq<'a>> =
-        fold (TaskEither.map2 acc) (TaskEither.succeed zero) r
-    
-    static member inline collect (r : TaskEither<'a> seq) = 
-        TaskEither.collect (Seq.fold, (fun acc item -> item |> Seq.singleton |> Seq.append acc), Seq.empty, r)
-        
-    static member inline collectMany (r : TaskEither<'a seq> seq) = 
-        TaskEither.collectMany (Seq.fold, Seq.append, Seq.empty, r)
-    
-    static member inline collect (r : TaskEither<'a> list) = 
-        TaskEither.collect (List.fold, (fun acc item -> item |> List.singleton |> List.append acc), List.empty, r)
-        
-    static member inline collectMany (r : TaskEither<'a list> list) = 
-        TaskEither.collectMany (List.fold, List.append, List.empty, r)
-
-    static member inline collect (r : TaskEither<'a> []) = 
-        TaskEither.collect (Array.fold, (fun acc item -> item |> Array.singleton |> Array.append acc), Array.empty, r)
-        
-    static member inline collectMany (r : TaskEither<'a []> []) = 
-        TaskEither.collectMany (Array.fold, Array.append, Array.empty, r)
