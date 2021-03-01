@@ -241,29 +241,3 @@ module Either =
         match c with
         | Choice1Of2 x -> succeed x
         | Choice2Of2 x -> fail (choice2map x)
-
-[<AbstractClass>]
-type Either() =
-    static member inline private collect (fold, acc : #seq<'a> -> 'a -> #seq<'a>, zero : #seq<'a>, r : #seq<Either<'a>>) : Either<#seq<'a>> =
-        fold (Either.map2 acc) (Either.succeed zero) r
-        
-    static member inline private collectMany (fold, acc : #seq<'a> -> #seq<'a> -> #seq<'a>, zero : #seq<'a>, r : #seq<Either<#seq<'a>>>) : Either<#seq<'a>> =
-        fold (Either.map2 acc) (Either.succeed zero) r
-    
-    static member inline collect (r : Either<'a> seq) = 
-        Either.collect (Seq.fold, (fun acc item -> item |> Seq.singleton |> Seq.append acc), Seq.empty, r)
-        
-    static member inline collectMany (r : Either<'a seq> seq) = 
-        Either.collectMany (Seq.fold, Seq.append, Seq.empty, r)
-    
-    static member inline collect (r : Either<'a> list) = 
-        Either.collect (List.fold, (fun acc item -> item |> List.singleton |> List.append acc), List.empty, r)
-        
-    static member inline collectMany (r : Either<'a list> list) = 
-        Either.collectMany (List.fold, List.append, List.empty, r)
-
-    static member inline collect (r : Either<'a> []) = 
-        Either.collect (Array.fold, (fun acc item -> item |> Array.singleton |> Array.append acc), Array.empty, r)
-        
-    static member inline collectMany (r : Either<'a []> []) = 
-        Either.collectMany (Array.fold, Array.append, Array.empty, r)

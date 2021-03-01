@@ -81,3 +81,75 @@ module EitherCEExtensions =
         /// </summary>
         /// <returns></returns>
         member inline _.Source(choice : Choice<_,FailureMessage>) = Either.ofChoice id choice
+        
+        
+    open System.Collections.Generic
+    open System.Linq
+            
+    [<AbstractClass>]
+    type Either() =
+        static member inline collect (source : (unit -> Either<'a>) seq) : Either<'a seq> =
+            either {
+                let mutable results = Enumerable.Empty()
+                
+                for item in source do
+                    let! result = item ()
+                    results <- results.Append(result)
+                
+                return results
+            }
+            
+        static member inline collectMany (source : (unit -> Either<'a seq>) seq) : Either<'a seq> =
+            either {
+                let mutable results = Enumerable.Empty()
+                
+                for item in source do
+                    let! result = item ()
+                    results <- results.Concat(result)
+                
+                return results
+            }
+        
+        static member inline collect (source : (unit -> Either<'a>) list) : Either<'a list> =
+            either {
+                let mutable results = List.empty
+                
+                for item in source do
+                    let! result = item ()
+                    results <- results @ [result]
+                
+                return results
+            }
+            
+        static member inline collectMany (source : (unit -> Either<'a list>) list) : Either<'a list> =
+            either {
+                let mutable results = List.empty
+                
+                for item in source do
+                    let! result = item ()
+                    results <- results @ result
+                
+                return results
+            }
+
+        static member inline collect (source : (unit -> Either<'a>) []) : Either<'a []> = 
+            either {
+                let results = Array.init source.Length (fun _ -> Unchecked.defaultof<'a>)
+                
+                for i in 0 .. source.Length - 1 do
+                    let! result = source.[i] ()
+                    results.[i] <- result
+                
+                return results
+            }
+            
+        static member inline collectMany (source : (unit -> Either<'a []>) []) : Either<'a []> = 
+            either {
+                let results = List()
+                
+                for item in source do
+                    let! result = item ()
+                    results.AddRange(result)
+                
+                return results.ToArray()
+            }

@@ -242,3 +242,73 @@ module TaskEitherCEExtensions =
             task { return! t } |> Task.map Either.succeed
         #endif
         
+    open System.Collections.Generic
+    open System.Linq
+            
+    [<AbstractClass>]
+    type TaskEither() =
+        static member inline collect (source : (unit -> TaskEither<'a>) seq) : TaskEither<'a seq> =
+            taskEither {
+                let mutable results = Enumerable.Empty()
+                
+                for item in source do
+                    let! result = item ()
+                    results <- results.Append(result)
+                
+                return results
+            }
+            
+        static member inline collectMany (source : (unit -> TaskEither<'a seq>) seq) : TaskEither<'a seq> =
+            taskEither {
+                let mutable results = Enumerable.Empty()
+                
+                for item in source do
+                    let! result = item ()
+                    results <- results.Concat(result)
+                
+                return results
+            }
+        
+        static member inline collect (source : (unit -> TaskEither<'a>) list) : TaskEither<'a list> =
+            taskEither {
+                let mutable results = List.empty
+                
+                for item in source do
+                    let! result = item ()
+                    results <- results @ [result]
+                
+                return results
+            }
+            
+        static member inline collectMany (source : (unit -> TaskEither<'a list>) list) : TaskEither<'a list> =
+            taskEither {
+                let mutable results = List.empty
+                
+                for item in source do
+                    let! result = item ()
+                    results <- results @ result
+                
+                return results
+            }
+
+        static member inline collect (source : (unit -> TaskEither<'a>) []) : TaskEither<'a []> = 
+            taskEither {
+                let results = Array.init source.Length (fun _ -> Unchecked.defaultof<'a>)
+                
+                for i in 0 .. source.Length - 1 do
+                    let! result = source.[i] ()
+                    results.[i] <- result
+                
+                return results
+            }
+            
+        static member inline collectMany (source : (unit -> TaskEither<'a []>) []) : TaskEither<'a []> = 
+            taskEither {
+                let results = List()
+                
+                for item in source do
+                    let! result = item ()
+                    results.AddRange(result)
+                
+                return results.ToArray()
+            }
