@@ -6,3 +6,6 @@
 
 ## New in 0.2.1 (Released 2021/02/25)
 * Fix packaging files for Fable
+
+## New in 0.2.2 (Released 2021/02/26)
+* Fix packaging files for Fable
