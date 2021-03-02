@@ -243,30 +243,29 @@ module TaskEitherCEExtensions =
         #endif
         
     open System.Collections.Generic
-    open System.Linq
             
     [<AbstractClass>]
     type TaskEither() =
         static member inline collect (source : (unit -> TaskEither<'a>) seq) : TaskEither<'a seq> =
             taskEither {
-                let mutable results = Enumerable.Empty()
+                let results = List()
                 
                 for item in source do
                     let! result = item ()
-                    results <- results.Append(result)
+                    results.Add(result)
                 
-                return results
+                return upcast results
             }
             
         static member inline collectMany (source : (unit -> TaskEither<'a seq>) seq) : TaskEither<'a seq> =
             taskEither {
-                let mutable results = Enumerable.Empty()
+                let results = List()
                 
                 for item in source do
                     let! result = item ()
-                    results <- results.Concat(result)
+                    results.AddRange(result)
                 
-                return results
+                return upcast results
             }
         
         static member inline collect (source : (unit -> TaskEither<'a>) list) : TaskEither<'a list> =

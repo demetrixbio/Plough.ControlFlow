@@ -84,30 +84,29 @@ module EitherCEExtensions =
         
         
     open System.Collections.Generic
-    open System.Linq
             
     [<AbstractClass>]
     type Either() =
         static member inline collect (source : (unit -> Either<'a>) seq) : Either<'a seq> =
             either {
-                let mutable results = Enumerable.Empty()
+                let results = List()
                 
                 for item in source do
                     let! result = item ()
-                    results <- results.Append(result)
+                    results.Add(result)
                 
-                return results
+                return upcast results
             }
             
         static member inline collectMany (source : (unit -> Either<'a seq>) seq) : Either<'a seq> =
             either {
-                let mutable results = Enumerable.Empty()
+                let results = List()
                 
                 for item in source do
                     let! result = item ()
-                    results <- results.Concat(result)
+                    results.AddRange(result)
                 
-                return results
+                return upcast results
             }
         
         static member inline collect (source : (unit -> Either<'a>) list) : Either<'a list> =
