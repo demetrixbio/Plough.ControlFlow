@@ -12,3 +12,6 @@
 
 ## New in 0.2.3 (Released 2021/03/01)
 * Lazy collect implementation for Either/TaskEither
+
+## New in 0.2.4 (Released 2021/03/01)
+* Lazy collect implementation for Either/TaskEither
