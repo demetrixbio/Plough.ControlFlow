@@ -25,3 +25,6 @@
 
 ## New in 0.3.1 (Released 2021/03/03)
 * DynamicQuery operators require opening a module to not trigger global override
+
+## New in 0.3.2 (Released 2021/03/03)
+* Single project publish
