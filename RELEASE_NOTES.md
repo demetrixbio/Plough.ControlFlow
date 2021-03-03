@@ -31,3 +31,6 @@
 
 ## New in 0.3.3 (Released 2021/03/04)
 * Reverted to multi project publish, fixed Fable tasks
+
+## New in 0.3.4 (Released 2021/03/04)
+* Fix Fable tasks

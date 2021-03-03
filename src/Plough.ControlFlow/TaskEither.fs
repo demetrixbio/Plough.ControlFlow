@@ -163,28 +163,3 @@ module TaskEither =
     let zip (x1 : TaskEither<'a>) (x2 : TaskEither<'b>) : TaskEither<'a * 'b> =
         Task.zip x1 x2
         |> Task.map (fun (r1, r2) -> Either.zip r1 r2)
-        
-    let onError (onError : FailureMessage -> TaskEither<'b>) (f : TaskEither<'b>) : TaskEither<'b> =
-        try
-            f |> Task.bind (fun f ->
-                match f with
-                | Success _ | SuccessWithWarning _ as s -> s |> Task.singleton
-                | Failure s -> onError s)
-        with
-        | exn ->
-            exn |> FailureMessage.ExceptionFailure |> onError
-            
-    #if !FABLE_COMPILER
-    let toTask f = f |> foldResult id (fun error -> failwith $"{error}") :> System.Threading.Tasks.Task
-    
-    let runSynchronously (f: TaskEither<_>) = f.ConfigureAwait(false).GetAwaiter().GetResult()
-    
-    #else
-    let runSynchronously (f: TaskEither<_>) = f |> Async.RunSynchronously
-    
-    #endif
-    
-    let unwrap (te : TaskEither<'a>) =
-        match te |> runSynchronously with
-        | Ok r -> r.Data 
-        | Error e -> e |> FailureMessage.unwrap |> failwith
