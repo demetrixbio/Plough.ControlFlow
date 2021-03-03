@@ -18,3 +18,7 @@
 
 ## New in 0.2.5 (Released 2021/03/01)
 * Fable compatible collect implementation for Either/TaskEither
+
+## New in 0.3.0 (Released 2021/03/03)
+* Extra extensions added for task interop
+* DynamicQuery added

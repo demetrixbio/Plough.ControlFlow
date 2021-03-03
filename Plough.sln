@@ -8,6 +8,20 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Plough.ControlFlow", "src\P
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Plough.ControlFlow.Tests", "test\Plough.ControlFlow.Tests\Plough.ControlFlow.Tests.fsproj", "{3C2B041C-921E-43E8-8B4B-B14E2F72AE31}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_project", "_project", "{73C92187-2100-4B36-BBD1-88D07AC71F8C}"
+ProjectSection(SolutionItems) = preProject
+	build.fsx = build.fsx
+	global.json = global.json
+	LICENSE = LICENSE
+	paket.dependencies = paket.dependencies
+	paket.lock = paket.lock
+	paket.template = paket.template
+	README.md = README.md
+	RELEASE_NOTES.md = RELEASE_NOTES.md
+EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Plough.DynamicQuery", "src\Plough.DynamicQuery\Plough.DynamicQuery.fsproj", "{7A842C4A-FEC1-4BA2-8EFF-E41EAC993174}"
+EndProject
 
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +37,10 @@ Global
 		{3C2B041C-921E-43E8-8B4B-B14E2F72AE31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C2B041C-921E-43E8-8B4B-B14E2F72AE31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C2B041C-921E-43E8-8B4B-B14E2F72AE31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A842C4A-FEC1-4BA2-8EFF-E41EAC993174}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A842C4A-FEC1-4BA2-8EFF-E41EAC993174}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A842C4A-FEC1-4BA2-8EFF-E41EAC993174}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A842C4A-FEC1-4BA2-8EFF-E41EAC993174}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
