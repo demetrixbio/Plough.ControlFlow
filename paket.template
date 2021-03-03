@@ -14,7 +14,7 @@ tags fsharp plough
 dependencies
   FSharp.Core >= 5.0
   Ply ~> 0.3.1
-  Ply ~> 2.0.78
+  Dapper ~> 2.0.78
 files
   src/Plough.ControlFlow/bin/Release ==> lib
   src/Plough.ControlFlow/*.fsproj ==> fable
