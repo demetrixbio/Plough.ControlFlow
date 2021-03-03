@@ -1,10 +1,11 @@
 namespace Plough.ControlFlow
 
 open Fable.Core
+
+#if !FABLE_COMPILER
 open System.Threading.Tasks
 open FSharp.Control.Tasks.Affine
 
-#if !FABLE_COMPILER
     type Task<'T> = System.Threading.Tasks.Task<'T>
 #else
     type Task<'T> = Async<'T>

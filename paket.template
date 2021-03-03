@@ -15,7 +15,11 @@ dependencies
   FSharp.Core >= 5.0
   Fable.Core ~> 3.2.4
   Ply ~> 0.3.1
+  Ply ~> 2.0.78
 files
-  src/bin/Release ==> lib
-  src/*.fsproj ==> fable
-  src/*.fs ==> fable
+  src/Plough.ControlFlow/bin/Release ==> lib
+  src/Plough.ControlFlow/*.fsproj ==> fable
+  src/Plough.ControlFlow/*.fs ==> fable
+  src/Plough.DynamicQuery/bin/Release ==> lib
+  src/Plough.DynamicQuery/*.fsproj ==> fable
+  src/Plough.DynamicQuery/*.fs ==> fable

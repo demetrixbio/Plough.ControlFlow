@@ -2,13 +2,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>Plough.ControlFlow.Tests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="EitherTests.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Plough.fsproj" />
+    <ProjectReference Include="..\..\src\Plough.ControlFlow\Plough.ControlFlow.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>  
