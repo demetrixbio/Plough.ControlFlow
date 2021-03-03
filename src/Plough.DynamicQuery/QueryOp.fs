@@ -1,5 +1,4 @@
-﻿[<AutoOpen>]
-module Plough.DynamicQuery.QueryOp
+﻿module Plough.DynamicQuery.Operator
 
 let (&&&) x y =
     match x, y with

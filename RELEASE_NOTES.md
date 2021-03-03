@@ -22,3 +22,6 @@
 ## New in 0.3.0 (Released 2021/03/03)
 * Extra extensions added for task interop
 * DynamicQuery added
+
+## New in 0.3.1 (Released 2021/03/03)
+* DynamicQuery operators require opening a module to not trigger global override
