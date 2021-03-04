@@ -2,6 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Plough.ControlFlow</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Task.fs" />
@@ -24,6 +25,10 @@
     <Compile Include="TaskEitherOption.fs" />
     <Compile Include="TaskEItherOptionCE.fs" />
     <Compile Include="TaskEitherOptionOp.fs" />
+    <Compile Include="DynamicQuery.fs" />
+    <Compile Include="SqlBuilder.fs" />
+    <Compile Include="QueryInterpreter.fs" />
+    <Compile Include="QueryOp.fs" />
     <Content Include="paket.references" />
   </ItemGroup>
   <!-- Add source files to "fable" folder in Nuget package -->

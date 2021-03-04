@@ -1,9 +1,11 @@
 namespace Plough.ControlFlow
 
+open Fable.Core
+
+#if !FABLE_COMPILER
 open System.Threading.Tasks
 open FSharp.Control.Tasks.Affine
 
-#if !FABLE_COMPILER
     type Task<'T> = System.Threading.Tasks.Task<'T>
 #else
     type Task<'T> = Async<'T>
@@ -34,7 +36,7 @@ module Task =
             ()
         }
     
-    let ofUnit (t : Task) = task { return! t }    
+    let ofUnit (t : Task) = task { return! t }
         
     #else
     
@@ -71,4 +73,10 @@ module Task =
 
     let map3 f x y z = apply (map2 f x y) z
 
-
+    let asAsync (task: Task<_>) =
+        task
+        #if !FABLE_COMPILER
+        |> Async.AwaitTask
+        #endif
+        
+    let startAsPromise (task: Task<_>) = task |> asAsync |> Async.StartAsPromise
