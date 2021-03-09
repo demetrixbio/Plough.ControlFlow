@@ -37,3 +37,6 @@
 
 ## New in 0.3.5-6 (Released 2021/03/04)
 * Single Plough library for ControlFlow and DynamicQuery for Fable compatibility
+
+## New in 0.4.0 (Released 2021/03/09)
+* Separate Plough.ControlFlow library

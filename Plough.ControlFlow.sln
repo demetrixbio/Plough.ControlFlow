@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26124.0
+MinimumVisualStudioVersion = 15.0.26124.0
+
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Plough.ControlFlow", "src\Plough.ControlFlow\Plough.ControlFlow.fsproj", "{4CCC4FF3-58DA-4850-9CBC-C2F9CB1E24B4}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Plough.ControlFlow.Tests", "test\Plough.ControlFlow.Tests\Plough.ControlFlow.Tests.fsproj", "{3C2B041C-921E-43E8-8B4B-B14E2F72AE31}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_project", "_project", "{73C92187-2100-4B36-BBD1-88D07AC71F8C}"
+ProjectSection(SolutionItems) = preProject
+	build.fsx = build.fsx
+	global.json = global.json
+	LICENSE = LICENSE
+	paket.dependencies = paket.dependencies
+	paket.lock = paket.lock
+	README.md = README.md
+	RELEASE_NOTES.md = RELEASE_NOTES.md
+	paket.template = paket.template
+EndProjectSection
+EndProject
+
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4CCC4FF3-58DA-4850-9CBC-C2F9CB1E24B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CCC4FF3-58DA-4850-9CBC-C2F9CB1E24B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CCC4FF3-58DA-4850-9CBC-C2F9CB1E24B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CCC4FF3-58DA-4850-9CBC-C2F9CB1E24B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C2B041C-921E-43E8-8B4B-B14E2F72AE31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C2B041C-921E-43E8-8B4B-B14E2F72AE31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C2B041C-921E-43E8-8B4B-B14E2F72AE31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C2B041C-921E-43E8-8B4B-B14E2F72AE31}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

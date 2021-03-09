@@ -1,11 +1,11 @@
 type file
-id Plough
+id Plough.ControlFlow
 version 0.0.0
 authors Demetrix
 owners Demetrix
-title Plough
+title Plough.ControlFlow
 description
-  Plough is a library that can be used to quickly develop back-end F# functionality.
+  Library to work fluently with a Success path that can have warnings. ControlFlow has compatibility with F# Fable.
 licenseExpression Apache-2.0
 licenseUrl https://licenses.nuget.org/Apache-2.0
 repositoryUrl https://github.com/demetrixbio/Plough
@@ -15,8 +15,7 @@ dependencies
   FSharp.Core >= 5.0
   Fable.Core ~> 3.2.4
   Ply ~> 0.3.1
-  Dapper ~> 2.0.78
 files
-  src/Plough/bin/Release ==> lib
-  src/Plough/*.fsproj ==> fable
-  src/Plough/*.fs ==> fable
+  src/Plough.ControlFlow/bin/Release ==> lib
+  src/Plough.ControlFlow/*.fsproj ==> fable
+  src/Plough.ControlFlow/*.fs ==> fable

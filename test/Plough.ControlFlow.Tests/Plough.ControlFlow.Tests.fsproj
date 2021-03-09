@@ -8,7 +8,7 @@
     <Compile Include="EitherTests.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Plough\Plough.fsproj" />
+    <ProjectReference Include="..\..\src\Plough.ControlFlow\Plough.ControlFlow.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>  
