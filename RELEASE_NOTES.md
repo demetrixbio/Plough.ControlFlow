@@ -40,3 +40,6 @@
 
 ## New in 0.4.0 (Released 2021/03/09)
 * Separate Plough.ControlFlow library
+
+## New in 0.4.1 (Released 2021/03/09)
+* FSharp.Core version relaxed to 4.7.2

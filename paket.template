@@ -12,7 +12,7 @@ repositoryUrl https://github.com/demetrixbio/Plough
 copyright Demetrix 2021
 tags fsharp plough
 dependencies
-  FSharp.Core >= 5.0
+  FSharp.Core >= 4.7.2
   Fable.Core ~> 3.2.4
   Ply ~> 0.3.1
 files

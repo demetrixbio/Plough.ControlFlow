@@ -4,7 +4,7 @@ NUGET
   remote: https://api.nuget.org/v3/index.json
     Fable.Core (3.2.4)
       FSharp.Core (>= 4.7.2)
-    FSharp.Core (5.0.1) - redirects: force
+    FSharp.Core (4.7.2) - redirects: force
     Ply (0.3.1)
       FSharp.Core (>= 4.6.2)
       System.Threading.Tasks.Extensions (>= 4.5.4)

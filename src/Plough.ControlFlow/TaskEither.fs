@@ -175,7 +175,7 @@ module TaskEither =
             exn |> FailureMessage.ExceptionFailure |> onError
             
     #if !FABLE_COMPILER
-    let toTask f = f |> foldResult id (fun error -> failwith $"{error}") :> System.Threading.Tasks.Task
+    let toTask f = f |> foldResult id (fun error -> error.ToString() |> failwith) :> System.Threading.Tasks.Task
     
     let runSynchronously (f: TaskEither<_>) = f.ConfigureAwait(false).GetAwaiter().GetResult()
     
