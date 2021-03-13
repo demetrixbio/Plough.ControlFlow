@@ -43,3 +43,6 @@
 
 ## New in 0.4.1 (Released 2021/03/09)
 * FSharp.Core version relaxed to 4.7.2
+
+## New in 0.4.2 (Released 2021/03/13)
+* Publish Plough.ControlFlow without conflicting dependencies
