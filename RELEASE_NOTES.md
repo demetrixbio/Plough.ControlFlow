@@ -46,3 +46,6 @@
 
 ## New in 0.4.2 (Released 2021/03/13)
 * Publish Plough.ControlFlow without conflicting dependencies
+
+## New in 0.4.3 (Released 2021/03/24)
+* Fix TaskEither.onError 

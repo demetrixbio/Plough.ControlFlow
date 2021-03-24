@@ -163,24 +163,35 @@ module TaskEither =
     let zip (x1 : TaskEither<'a>) (x2 : TaskEither<'b>) : TaskEither<'a * 'b> =
         Task.zip x1 x2
         |> Task.map (fun (r1, r2) -> Either.zip r1 r2)
-        
-    let onError (onError : FailureMessage -> TaskEither<'b>) (f : TaskEither<'b>) : TaskEither<'b> =
+               
+    #if !FABLE_COMPILER
+    let toTask f = f |> foldResult id (fun error -> error.ToString() |> failwith) :> System.Threading.Tasks.Task
+    
+    let runSynchronously (f: TaskEither<_>) = f.ConfigureAwait(false).GetAwaiter().GetResult()
+    
+    let inline onError (onError : FailureMessage -> TaskEither<'b>) (f : unit -> TaskEither<'b>) : TaskEither<'b> =
+        task {
+            try
+                match! f () with
+                | Success s -> return Ok { Data=s; Warnings=[] }
+                | SuccessWithWarning (s, w) -> return Ok { Data=s; Warnings=w }
+                | Failure s -> return! onError s
+            with
+            | exn -> return! exn |> FailureMessage.ExceptionFailure |> onError
+        }
+    
+    #else
+    let runSynchronously (f: TaskEither<_>) = f |> Async.RunSynchronously
+    
+    let onError (onError : FailureMessage -> TaskEither<'b>) (f : unit -> TaskEither<'b>) : TaskEither<'b> =
         try
-            f |> Task.bind (fun f ->
+            f() |> Task.bind (fun f ->
                 match f with
                 | Success _ | SuccessWithWarning _ as s -> s |> Task.singleton
                 | Failure s -> onError s)
         with
         | exn ->
             exn |> FailureMessage.ExceptionFailure |> onError
-            
-    #if !FABLE_COMPILER
-    let toTask f = f |> foldResult id (fun error -> error.ToString() |> failwith) :> System.Threading.Tasks.Task
-    
-    let runSynchronously (f: TaskEither<_>) = f.ConfigureAwait(false).GetAwaiter().GetResult()
-    
-    #else
-    let runSynchronously (f: TaskEither<_>) = f |> Async.RunSynchronously
     
     #endif
     
