@@ -49,3 +49,6 @@
 
 ## New in 0.4.3 (Released 2021/03/24)
 * Fix TaskEither.onError 
+
+## New in 0.5.0 (Released 2021/05/07)
+* Add Task.collect and Task.collectMany

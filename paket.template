@@ -1,6 +1,6 @@
 type file
 id Plough.ControlFlow
-version 0.4.3
+version 0.0.0
 authors Demetrix
 owners Demetrix
 title Plough.ControlFlow
@@ -8,7 +8,7 @@ description
   Library to work fluently with a Success path that can have warnings. ControlFlow has compatibility with F# Fable.
 licenseExpression Apache-2.0
 licenseUrl https://licenses.nuget.org/Apache-2.0
-repositoryUrl https://github.com/demetrixbio/Plough
+repositoryUrl https://github.com/demetrixbio/Plough.ControlFlow
 copyright Demetrix 2021
 tags fsharp plough
 dependencies
