@@ -40,7 +40,6 @@ Target.create "Test" (fun _ ->
   |> Seq.iter (DotNet.test id)
 )
 
-// PUBLISH TO NUGET
 Target.create "Pack" (fun _ ->
     let release = ReleaseNotes.load "RELEASE_NOTES.md"
 
@@ -53,11 +52,15 @@ Target.create "Pack" (fun _ ->
             IncludeReferencedProjects = true
             Version = release.AssemblyVersion
             TemplateFile = "paket.template"
-            ReleaseNotes = String.toLines release.Notes })
+            ReleaseNotes = String.toLines release.Notes })  
+
 )
+
 "Build" ==> "Pack"
 
 Target.create "Publish" (fun _ ->
+    // target not yet working
+    // dotnet nuget push Plough.ControlFlow.<version>.nupkg -s https://api.nuget.org/v3/index.json -k <api key>
     Paket.push(fun p ->
         { p with
             WorkingDir = "bin" })
