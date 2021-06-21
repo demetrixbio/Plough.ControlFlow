@@ -52,3 +52,6 @@
 
 ## New in 0.5.0 (Released 2021/05/07)
 * Add Task.collect and Task.collectMany
+
+## New in 0.5.1 (Released 2021/06/21)
+* Fix Fable tasks for Task.collect and Task.collectMany
