@@ -40,15 +40,43 @@ module EitherCE =
                      if not <| obj.ReferenceEquals(resource, null)
                      then resource.Dispose()))
 
-        member this.While(guard : unit -> bool, generator : unit -> Either<unit>) : Either<unit> =
-            if not <| guard ()
-            then this.Zero()
-            else this.Bind(this.Run generator, (fun () -> this.While(guard, generator)))
+        member _.While(guard : unit -> bool, computation : unit -> Either<unit>) : Either<unit> =
+            let mutable fin, result = false, Either.succeed ()
 
-        member this.For(sequence : #seq<'a>, binder : 'a -> Either<unit>) : Either<unit> =
-            this.Using
-                (sequence.GetEnumerator(),
-                 (fun enum -> this.While(enum.MoveNext, this.Delay(fun () -> binder enum.Current))))
+            while not fin && guard () do
+                match computation () with
+                | Ok { Data = (); Warnings = w1 } ->
+                    match result with
+                    | Error _ as e ->
+                        result <- e
+                        fin <- true
+                    | Ok { Data = (); Warnings = w2 } ->
+                        result <- Ok { Data = (); Warnings = w1 @ w2 }
+                | Error _ as e ->
+                    result <- e
+                    fin <- true
+
+            result
+
+        member _.For(sequence : #seq<'a>, binder : 'a -> Either<unit>) : Either<unit> =
+            use enumerator = sequence.GetEnumerator()
+            let mutable fin, result = false, Either.succeed ()
+
+            while not fin && enumerator.MoveNext() do
+                match binder enumerator.Current with
+                | Ok { Data = (); Warnings = w1 } ->
+                    match result with
+                    | Error _ as e ->
+                        result <- e
+                        fin <- true
+                    | Ok { Data = (); Warnings = w2 } ->
+                        result <- Ok { Data = (); Warnings = w1 @ w2 }
+                | Error _ as e ->
+                    result <- e
+                    fin <- true
+
+            result
+
 
         member _.BindReturn(x : Either<'a>, f) = Either.map f x
 

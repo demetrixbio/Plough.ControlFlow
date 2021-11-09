@@ -71,7 +71,9 @@ module TaskEitherCE =
                     match! computation () with
                     | Ok { Data = (); Warnings = w1 } ->
                         match result with
-                        | Error _ -> ()
+                        | Error _ as e ->
+                            result <- e
+                            fin <- true
                         | Ok { Data = (); Warnings = w2 } ->
                             result <- Ok { Data = (); Warnings = w1 @ w2 }
                     | Error _ as e ->
@@ -90,7 +92,9 @@ module TaskEitherCE =
                     match! binder enumerator.Current with
                     | Ok { Data = (); Warnings = w1 } ->
                         match result with
-                        | Error _ -> ()
+                        | Error _ as e ->
+                            result <- e
+                            fin <- true
                         | Ok { Data = (); Warnings = w2 } ->
                             result <- Ok { Data = (); Warnings = w1 @ w2 }
                     | Error _ as e ->

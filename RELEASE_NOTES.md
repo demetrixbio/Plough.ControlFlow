@@ -55,3 +55,7 @@
 
 ## New in 0.5.1 (Released 2021/06/21)
 * Fix Fable tasks for Task.collect and Task.collectMany
+
+## New in 0.5.2 (Released 2021/11/09)
+* Fix TaskEither.For/While and Either.For/While to quit processing cycle on inner error
+* Fix TaskEither.onError / Either.onError - exception error processed only once, rethrow original error

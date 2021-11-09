@@ -167,35 +167,37 @@ module TaskEither =
     #if !FABLE_COMPILER
     let toTask f = f |> foldResult id (fun error -> error.ToString() |> failwith) :> System.Threading.Tasks.Task
     
+    /// Synchronously executes task and gets underlying Either<'result>. Not supported by Fable due to JS limitations.
     let runSynchronously (f: TaskEither<_>) = f.ConfigureAwait(false).GetAwaiter().GetResult()
     
     let inline onError (onError : FailureMessage -> TaskEither<'b>) (f : unit -> TaskEither<'b>) : TaskEither<'b> =
         task {
-            try
-                match! f () with
-                | Success s -> return Ok { Data=s; Warnings=[] }
-                | SuccessWithWarning (s, w) -> return Ok { Data=s; Warnings=w }
-                | Failure s -> return! onError s
-            with
-            | exn -> return! exn |> FailureMessage.ExceptionFailure |> onError
+            let! result =    
+                task {
+                    try return! f()
+                    with
+                    | exn -> return! exn |> FailureMessage.ExceptionFailure |> returnError
+                }
+            
+            match result with
+            | Success _ | SuccessWithWarning _ -> return result
+            | Failure s -> return! onError s
         }
     
     #else
-    let runSynchronously (f: TaskEither<_>) = f |> Async.RunSynchronously
-    
+    type TaskEither<'a> = Async<Either<'a>>
     let onError (onError : FailureMessage -> TaskEither<'b>) (f : unit -> TaskEither<'b>) : TaskEither<'b> =
-        try
-            f() |> Task.bind (fun f ->
-                match f with
-                | Success _ | SuccessWithWarning _ as s -> s |> Task.singleton
-                | Failure s -> onError s)
-        with
-        | exn ->
-            exn |> FailureMessage.ExceptionFailure |> onError
+        async {
+            let! result =    
+                async {
+                    try return! f()
+                    with
+                    | exn -> return! exn |> FailureMessage.ExceptionFailure |> returnError
+                }
+            
+            match result with
+            | Success _ | SuccessWithWarning _ -> return result
+            | Failure s -> return! onError s
+        }
     
     #endif
-    
-    let unwrap (te : TaskEither<'a>) =
-        match te |> runSynchronously with
-        | Ok r -> r.Data 
-        | Error e -> e |> FailureMessage.unwrap |> failwith

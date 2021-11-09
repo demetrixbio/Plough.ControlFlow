@@ -242,7 +242,7 @@ module Either =
         | Choice1Of2 x -> succeed x
         | Choice2Of2 x -> fail (choice2map x)
         
-    let onError (onError : FailureMessage -> Either<'b>) (f : Either<'b>) : Either<'b> =
-        match f with
+    let inline onError (onError : FailureMessage -> Either<'b>) (f : unit -> Either<'b>) : Either<'b> =
+        match f() with
         | Success _ | SuccessWithWarning _ as s -> s
         | Failure s -> onError s     
