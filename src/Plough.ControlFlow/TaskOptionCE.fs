@@ -1,64 +1,80 @@
 namespace Plough.ControlFlow
 
 open System
-#if !FABLE_COMPILER
-open FSharp.Control.Tasks.Affine.Unsafe
-open FSharp.Control.Tasks.Affine
-open Ply
-#endif
 
 [<AutoOpen>]
 module TaskOptionCE =
     type TaskOptionBuilder() =
         #if !FABLE_COMPILER
-        member inline _.Return(value : 'T) : Ply<Option<_>> = uply.Return <| option.Return value
+        member inline _.Return(value : 'T) : Task<Option<_>> =
+            value |> Some |> Task.FromResult
 
-        member inline _.ReturnFrom(taskResult : Task<Option<_>>) : Ply<Option<_>> = uply.ReturnFrom taskResult
+        member inline _.ReturnFrom(taskResult : Task<Option<_>>) : Task<Option<_>> =
+            taskResult
 
-        member inline this.ReturnFrom(asyncResult : Async<Option<_>>) : Ply<Option<_>> =
-            this.ReturnFrom(Async.StartAsTask asyncResult)
+        member inline this.ReturnFrom(asyncResult : Async<Option<_>>) : Task<Option<_>> =
+            asyncResult |> Async.StartAsTask
 
-        member inline _.ReturnFrom(result : Option<_>) : Ply<Option<_>> = uply.Return result
+        member inline _.ReturnFrom(result : Option<_>) : Task<Option<_>> =
+            result |> Task.FromResult
 
-        member inline _.Zero() : Ply<Option<_>> = uply.Return <| option.Zero()
+        member inline _.Zero() : Task<Option<_>> =
+            option.Zero() |> Task.FromResult
 
-        member inline _.Bind(taskResult : Task<Option<_>>, binder : 'T -> Ply<Option<_>>) : Ply<Option<_>> =
-            let binder' r =
-                match r with
-                | Some x -> binder x
-                | None -> uply.Return None
+        member inline _.Bind(taskResult : Task<Option<_>>, binder : 'T -> Task<Option<_>>) : Task<Option<_>> =
+            task {
+                match! taskResult with
+                | None -> return None
+                | Some d1 ->
+                    match! binder d1 with
+                    | None -> return None
+                    | Some d2 -> return d2
+            }
 
-            uply.Bind(taskResult, binder')
-
-        member inline this.Bind(asyncResult : Async<Option<_>>, binder : 'T -> Ply<Option<_>>) : Ply<Option<_>> =
+        member inline this.Bind(asyncResult : Async<Option<_>>, binder : 'T -> Task<Option<_>>) : Task<Option<_>> =
             this.Bind(Async.StartAsTask asyncResult, binder)
 
-        member inline this.Bind(result : Option<_>, binder : 'T -> Ply<Option<_>>) : Ply<Option<_>> =
-            let result = result |> Task.singleton
+        member inline this.Bind(result : Option<_>, binder : 'T -> Task<Option<_>>) : Task<Option<_>> =
+            let result = result |> Task.FromResult
             this.Bind(result, binder)
 
-        member inline _.Delay(generator : unit -> Ply<Option<_>>) = uply.Delay(generator)
+        member inline _.Delay(generator : unit -> Task<Option<_>>) =
+            generator
 
-        member inline _.Combine(computation1 : Ply<Option<'T>>, computation2 : unit -> Ply<Option<'U>>)
-                                : Ply<Option<'U>> =
-            uply {
+        member inline _.Combine(computation1 : Task<Option<'T>>, computation2 : unit -> Task<Option<'U>>)
+                                : Task<Option<'U>> =
+            task {
                 match! computation1 with
                 | None -> return None
                 | Some _ -> return! computation2 ()
             }
 
-        member inline _.TryWith(computation : unit -> Ply<Option<_>>, handler : exn -> Ply<Option<_>>)
-                                : Ply<Option<_>> =
-            uply.TryWith(computation, handler)
+        member inline _.TryWith(computation : unit -> Task<Option<_>>, handler : exn -> Task<Option<_>>) : Task<Option<_>> =
+            task {
+                try
+                    return! computation ()
+                with
+                | ex ->
+                    return! handler ex
+            }
 
-        member inline _.TryFinally(computation : unit -> Ply<Option<_>>, compensation : unit -> unit) : Ply<Option<_>> =
-            uply.TryFinally(computation, compensation)
+        member inline _.TryFinally(computation : unit -> Task<Option<_>>, compensation : unit -> unit) : Task<Option<_>> =
+            task {
+                try
+                    return! computation ()
+                finally
+                    compensation ()
+            }
 
-        member inline _.Using(resource : 'T :> IDisposable, binder : 'T -> Ply<Option<_>>) : Ply<Option<_>> =
-            uply.Using(resource, binder)
+        member inline _.Using(resource : 'T :> IDisposable, binder : 'T -> Task<Option<_>>) : Task<Option<_>> =
+            task {
+                use res = resource
+                let! result = binder res
+                return result
+            }
 
-        member _.While(guard : unit -> bool, computation : unit -> Ply<Option<'U>>) : Ply<Option<'U>> =
-            uply {
+        member _.While(guard : unit -> bool, computation : unit -> Task<Option<'U>>) : Task<Option<'U>> =
+            task {
                 let mutable fin, result = false, None
 
                 while not fin && guard () do
@@ -71,8 +87,8 @@ module TaskOptionCE =
                 return result
             }
 
-        member _.For(sequence : #seq<'T>, binder : 'T -> Ply<Option<'U>>) : Ply<Option<'U>> =
-            uply {
+        member _.For(sequence : #seq<'T>, binder : 'T -> Task<Option<'U>>) : Task<Option<'U>> =
+            task {
                 use enumerator = sequence.GetEnumerator()
                 let mutable fin, result = false, None
 
@@ -86,7 +102,7 @@ module TaskOptionCE =
                 return result
             }
 
-        member inline _.Run(f : unit -> Ply<'m>) = task.Run f
+        member inline _.Run(f : unit -> Task<'m>) = f ()
         
         #else
         

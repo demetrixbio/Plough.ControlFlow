@@ -1,9 +1,5 @@
 ﻿namespace Plough.ControlFlow
 
-#if !FABLE_COMPILER 
-open FSharp.Control.Tasks.Affine
-#endif
-
 type TaskEither<'a> = Task<Either<'a>>
 
 [<RequireQualifiedAccess>]

@@ -1,11 +1,6 @@
 ﻿namespace Plough.ControlFlow
 
 open System
-#if !FABLE_COMPILER
-open FSharp.Control.Tasks.Affine.Unsafe
-open FSharp.Control.Tasks.Affine
-#endif
-open Ply
 
 [<AutoOpen>]
 module TaskEitherCE =
@@ -22,16 +17,17 @@ module TaskEitherCE =
         member inline _.Source(task : Task<Either<'a>>) : Task<Either<'a>> = task
         
         #if !FABLE_COMPILER
-        member inline _.Return(value : 'a) : Ply<Either<'a>> =
-            uply.Return(either.Return value)
+        member inline _.Return(value : 'a) : Task<Either<'a>> =
+            value |> Either.succeed |> Task.FromResult
 
-        member inline _.ReturnFrom(taskEither : TaskEither<'a>) : Ply<Either<'a>> =
-            uply.ReturnFrom taskEither
+        member inline _.ReturnFrom(taskEither : TaskEither<'a>) : Task<Either<'a>> =
+            taskEither
 
-        member inline _.Zero() : Ply<Either<unit>> = uply.Return <| either.Zero()
+        member inline _.Zero() : Task<Either<unit>> =
+            () |> Either.succeed |> Task.FromResult
 
-        member inline _.Bind(taskEither : TaskEither<'a>, binder : 'a -> Ply<Either<'b>>) : Ply<Either<'b>> =
-            uply {
+        member inline _.Bind(taskEither : TaskEither<'a>, binder : 'a -> Task<Either<'b>>) : Task<Either<'b>> =
+            task {
                 match! taskEither with
                 | Error e ->
                     return Error e
@@ -41,11 +37,11 @@ module TaskEitherCE =
                     | Ok { Data = d2; Warnings = w2 } -> return Ok { Data = d2; Warnings = w1 @ w2 }
             }
 
-        member inline _.Delay(generator : unit -> Ply<Either<'a>>) : unit -> Ply<Either<'a>> =
-            uply.Delay(generator)
-
-        member inline _.Combine(computation1 : Ply<Either<unit>>, computation2 : unit -> Ply<Either<'a>>) : Ply<Either<'a>> =
-            uply {
+        member inline _.Delay(generator : unit -> Task<Either<'a>>) : unit -> Task<Either<'a>> =
+            generator
+            
+        member inline _.Combine(computation1 : Task<Either<unit>>, computation2 : unit -> Task<Either<'a>>) : Task<Either<'a>> =
+            task {
                 match! computation1 with
                 | Error e -> return Error e
                 | Ok  { Data = _; Warnings = w1 } ->
@@ -54,17 +50,32 @@ module TaskEitherCE =
                     | Ok { Data = d2; Warnings = w2 } -> return Ok { Data = d2; Warnings = w1 @ w2 }
             }
 
-        member inline _.TryWith(computation : unit -> Ply<Either<'a>>, handler : exn -> Ply<Either<'a>>) : Ply<Either<'a>> =
-            uply.TryWith(computation, handler)
+        member inline _.TryWith(computation : unit -> Task<Either<'a>>, handler : exn -> Task<Either<'a>>) : Task<Either<'a>> =
+            task {
+                try
+                    return! computation ()
+                with
+                | ex ->
+                    return! handler ex
+            }
 
-        member inline _.TryFinally(computation : unit -> Ply<Either<'a>>, compensation : unit -> unit) : Ply<Either<'a>> =
-            uply.TryFinally(computation, compensation)
+        member inline _.TryFinally(computation : unit -> Task<Either<'a>>, compensation : unit -> unit) : Task<Either<'a>> =
+            task {
+                try
+                    return! computation ()
+                finally
+                    compensation ()
+            }
 
-        member inline _.Using(resource : 'a :> IDisposable, binder : 'a -> Ply<Either<'b>>) : Ply<Either<'b>> =
-            uply.Using(resource, binder)
+        member inline _.Using(resource : 'a :> IDisposable, binder : 'a -> Task<Either<'b>>) : Task<Either<'b>> =
+            task {
+                use res = resource
+                let! result = binder res
+                return result
+            }
 
-        member _.While(guard : unit -> bool, computation : unit -> Ply<Either<unit>>) : Ply<Either<unit>> =
-            uply {
+        member _.While(guard : unit -> bool, computation : unit -> Task<Either<unit>>) : Task<Either<unit>> =
+            task {
                 let mutable fin, result = false, Either.succeed ()
 
                 while not fin && guard () do
@@ -83,8 +94,8 @@ module TaskEitherCE =
                 return result
             }
 
-        member _.For(sequence : #seq<'a>, binder : 'a -> Ply<Either<unit>>) : Ply<Either<unit>> =
-            uply {
+        member _.For(sequence : #seq<'a>, binder : 'a -> Task<Either<unit>>) : Task<Either<unit>> =
+            task {
                 use enumerator = sequence.GetEnumerator()
                 let mutable fin, result = false, Either.succeed ()
 
@@ -107,7 +118,7 @@ module TaskEitherCE =
         member inline this.BindReturn(x : Task<Either<'a>>, f) =
             this.Bind(x, (fun x -> this.Return(f x)))
             
-        member inline _.Run(f : unit -> Ply<'m>) = task.Run f
+        member inline _.Run(f : unit -> Task<'m>) = f ()
         
         /// <summary>
         /// Method lets us transform data types into our internal representation.

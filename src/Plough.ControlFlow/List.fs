@@ -1,7 +1,5 @@
 namespace Plough.ControlFlow
 
-open FSharp.Control.Tasks
-
 [<RequireQualifiedAccess>]
 module List =
 

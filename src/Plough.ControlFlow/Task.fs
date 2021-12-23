@@ -4,7 +4,6 @@ open Fable.Core
 
 #if !FABLE_COMPILER
 open System.Threading.Tasks
-open FSharp.Control.Tasks.Affine
 
     type Task<'T> = System.Threading.Tasks.Task<'T>
 #else

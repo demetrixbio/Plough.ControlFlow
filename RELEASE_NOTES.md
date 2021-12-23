@@ -59,3 +59,6 @@
 ## New in 0.5.2 (Released 2021/11/09)
 * Fix TaskEither.For/While and Either.For/While to quit processing cycle on inner error
 * Fix TaskEither.onError / Either.onError - exception error processed only once, rethrow original error
+
+# New in 1.0.0 (Released 2021/12/23)
+* F# 6 with native task support

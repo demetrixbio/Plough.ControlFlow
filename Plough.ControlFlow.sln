@@ -18,6 +18,7 @@ ProjectSection(SolutionItems) = preProject
 	README.md = README.md
 	RELEASE_NOTES.md = RELEASE_NOTES.md
 	paket.template = paket.template
+	.config\dotnet-tools.json = .config\dotnet-tools.json
 EndProjectSection
 EndProject
 
