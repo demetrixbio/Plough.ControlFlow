@@ -12,8 +12,9 @@ repositoryUrl https://github.com/demetrixbio/Plough.ControlFlow
 copyright Demetrix 2021
 tags fsharp plough
 dependencies
-  FSharp.Core >= 6.0.1
+  FSharp.Core >= 4.7.0
   Fable.Core >= 3.6.1
+  Ply >= 0.3.1
 files
   src/Plough.ControlFlow/bin/Release ==> lib
   src/Plough.ControlFlow/*.fsproj ==> fable

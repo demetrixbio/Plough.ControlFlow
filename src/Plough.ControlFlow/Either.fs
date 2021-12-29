@@ -2,6 +2,7 @@
 
 #if !FABLE_COMPILER
 open System.Threading.Tasks
+open FSharp.Control.Tasks
 #endif
 
 type FailureMessage =
