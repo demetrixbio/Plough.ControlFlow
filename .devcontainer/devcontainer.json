@@ -1,0 +1,16 @@
+{
+	"name": "dotnet",
+	// Set the build context one level higher so we can grab metadata like global.json
+	"context": "..",
+	"dockerFile": "Dockerfile",
+	"forwardPorts": [
+		0
+	],
+	"extensions": [
+		"ms-dotnettools.csharp",
+		"editorconfig.editorconfig",
+		"ionide.ionide-fsharp",
+		"ionide.ionide-paket",
+		"ionide.ionide-fake"
+	]
+}
