@@ -7,6 +7,16 @@ nuget FSharp.Core >= 4.7.0 lowest_matching: true
 nuget Fable.Core >= 3.6.1
 nuget Ply >= 0.3.1
 
+group build
+    framework: net6.0, netstandard2.0
+    source https://nuget.org/api/v2
+    storage:none
+    nuget Fake.DotNet.Cli
+    nuget Fake.IO.FileSystem
+    nuget Fake.Core.Target
+    nuget Fake.Core.ReleaseNotes
+    nuget Fake.DotNet.Paket 
+
 group test
     framework: net6.0, netstandard2.0
     source https://nuget.org/api/v2
