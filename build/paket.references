@@ -1,0 +1,6 @@
+group build
+Fake.DotNet.Cli
+Fake.IO.FileSystem
+Fake.Core.Target
+Fake.Core.ReleaseNotes
+Fake.DotNet.Paket
