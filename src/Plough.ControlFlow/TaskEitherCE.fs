@@ -1,16 +1,11 @@
 ﻿namespace Plough.ControlFlow
 
 open System
-#if !FABLE_COMPILER
-open FSharp.Control.Tasks.Affine.Unsafe
-open FSharp.Control.Tasks.Affine
-#endif
-open Ply
 
 [<AutoOpen>]
 module TaskEitherCE =
 
-    type TaskEitherBuilder() =
+    type TaskEitherBuilderFableShim() =
 
         member inline _.MergeSources(t1 : Task<Either<'a>>, t2 : Task<Either<'b>>) = TaskEither.zip t1 t2
         
@@ -22,97 +17,6 @@ module TaskEitherCE =
         member inline _.Source(task : Task<Either<'a>>) : Task<Either<'a>> = task
         
         #if !FABLE_COMPILER
-        // member inline _.Return(value : 'a) : Ply<Either<'a>> =
-        //     uply.Return(either.Return value)
-
-        // member inline _.ReturnFrom(taskEither : TaskEither<'a>) : Ply<Either<'a>> =
-        //     uply.ReturnFrom taskEither
-
-        // member inline _.Zero() : Ply<Either<unit>> = uply.Return <| either.Zero()
-
-        // member inline _.Bind(taskEither : TaskEither<'a>, binder : 'a -> Ply<Either<'b>>) : Ply<Either<'b>> =
-        //     uply {
-        //         match! taskEither with
-        //         | Error e ->
-        //             return Error e
-        //         | Ok { Data = d; Warnings = w1 } ->
-        //             match! binder d with
-        //             | Error e -> return Error e
-        //             | Ok { Data = d2; Warnings = w2 } -> return Ok { Data = d2; Warnings = w1 @ w2 }
-        //     }
-
-        // member inline _.Delay(generator : unit -> Ply<Either<'a>>) : unit -> Ply<Either<'a>> =
-        //     uply.Delay(generator)
-
-        // member inline _.Combine(computation1 : Ply<Either<unit>>, computation2 : unit -> Ply<Either<'a>>) : Ply<Either<'a>> =
-        //     uply {
-        //         match! computation1 with
-        //         | Error e -> return Error e
-        //         | Ok  { Data = _; Warnings = w1 } ->
-        //             match! computation2 () with
-        //             | Error e -> return Error e
-        //             | Ok { Data = d2; Warnings = w2 } -> return Ok { Data = d2; Warnings = w1 @ w2 }
-        //     }
-
-        // member inline _.TryWith(computation : unit -> Ply<Either<'a>>, handler : exn -> Ply<Either<'a>>) : Ply<Either<'a>> =
-        //     uply.TryWith(computation, handler)
-
-        // member inline _.TryFinally(computation : unit -> Ply<Either<'a>>, compensation : unit -> unit) : Ply<Either<'a>> =
-        //     uply.TryFinally(computation, compensation)
-
-        // member inline _.Using(resource : 'a :> IDisposable, binder : 'a -> Ply<Either<'b>>) : Ply<Either<'b>> =
-        //     uply.Using(resource, binder)
-
-        // member _.While(guard : unit -> bool, computation : unit -> Ply<Either<unit>>) : Ply<Either<unit>> =
-        //     uply {
-        //         let mutable fin, result = false, Either.succeed ()
-
-        //         while not fin && guard () do
-        //             match! computation () with
-        //             | Ok { Data = (); Warnings = w1 } ->
-        //                 match result with
-        //                 | Error _ as e ->
-        //                     result <- e
-        //                     fin <- true
-        //                 | Ok { Data = (); Warnings = w2 } ->
-        //                     result <- Ok { Data = (); Warnings = w1 @ w2 }
-        //             | Error _ as e ->
-        //                 result <- e
-        //                 fin <- true
-
-        //         return result
-        //     }
-
-        // member _.For(sequence : #seq<'a>, binder : 'a -> Ply<Either<unit>>) : Ply<Either<unit>> =
-        //     uply {
-        //         use enumerator = sequence.GetEnumerator()
-        //         let mutable fin, result = false, Either.succeed ()
-
-        //         while not fin && enumerator.MoveNext() do
-        //             match! binder enumerator.Current with
-        //             | Ok { Data = (); Warnings = w1 } ->
-        //                 match result with
-        //                 | Error _ as e ->
-        //                     result <- e
-        //                     fin <- true
-        //                 | Ok { Data = (); Warnings = w2 } ->
-        //                     result <- Ok { Data = (); Warnings = w1 @ w2 }
-        //             | Error _ as e ->
-        //                 result <- e
-        //                 fin <- true
-
-        //         return result
-        //     }
-
-        // member inline this.BindReturn(x : Task<Either<'a>>, f) =
-        //     this.Bind(x, (fun x -> this.Return(f x)))
-            
-        // member inline _.Run(f : unit -> Ply<'m>) = task.Run f
-        
-        // /// <summary>
-        // /// Method lets us transform data types into our internal representation.
-        // /// </summary>
-        // member inline _.Source(result : Async<Either<'a>>) : Task<Either<'a>> = result |> Async.StartAsTask
         
         #else
         member inline _.Return(value : 'a) : Async<Either<'a>> =
@@ -199,13 +103,13 @@ module TaskEitherCE =
         member inline _.Run(f : unit -> Async<'m>) = async.ReturnFrom (f())
         #endif
         
-    let taskEither = TaskEitherBuilder()
+    
 
 // Having members as extensions gives them lower priority in
 // overload resolution between Task<'a> and Task<Either<'a>>.
 [<AutoOpen>]
 module TaskEitherCEExtensions =
-    type TaskEitherBuilder with
+    type TaskEitherBuilderFableShim with
         /// <summary>
         /// Needed to allow `for..in` and `for..do` functionality
         /// </summary>
@@ -246,11 +150,10 @@ module TaskEitherCEExtensions =
             task { return! t } |> Task.map Either.succeed
         #endif
         
-    open System.Collections.Generic
           
 
 
-
+#if !FABLE_COMPILER 
             
 
 open System
@@ -495,7 +398,7 @@ type TaskEitherBuilderBase() =
                     TaskEitherCode<'TOverall, unit>(fun sm -> (body e.Current).Invoke(&sm))
                 ))
         )
-
+#if NETSTANDARD2_1
     member inline internal this.TryFinallyAsync
         (
             body: TaskEitherCode<'TOverall, 'T>,
@@ -537,25 +440,27 @@ type TaskEitherBuilderBase() =
                         false)
         )
 
-    // TODO: IAsyncDisposable
-    // member inline this.Using<'Resource, 'TOverall, 'T, 'Error when 'Resource :> IAsyncDisposable>
-    //     (
-    //         resource: 'Resource,
-    //         body: 'Resource -> TaskEitherCode<'TOverall, 'Error, 'T>
-    //     ) : TaskEitherCode<'TOverall, 'Error, 'T> =
-    //     this.TryFinallyAsync(
-    //         (fun sm -> (body resource).Invoke(&sm)),
-    //         (fun () ->
-    //             if not (isNull (box resource)) then
-    //                 resource.DisposeAsync()
-    //             else
-    //                 ValueTask())
-    //     )
 
+    member inline this.Using<'Resource, 'TOverall, 'T, 'Error when 'Resource :> IAsyncDisposable>
+        (
+            resource: 'Resource,
+            body: 'Resource -> TaskEitherCode<'TOverall, 'Error, 'T>
+        ) : TaskEitherCode<'TOverall, 'Error, 'T> =
+        this.TryFinallyAsync(
+            (fun sm -> (body resource).Invoke(&sm)),
+            (fun () ->
+                if not (isNull (box resource)) then
+                    resource.DisposeAsync()
+                else
+                    ValueTask())
+        )
+#endif
 
     member inline this.Source(taskEither: TaskEither<'T>) : TaskEither<'T> = taskEither
     member inline _.Source(result: Async<Result<_, _>>) : Task<Result<_, _>> = result |> Async.StartAsTask
+    #if NETSTANDARD2_1
     member inline _.Source(t: ValueTask<Result<_, _>>) : Task<Result<_, _>> = task { return! t }
+    #endif
     member inline _.Source(result: Result<_, _>) : Task<Result<_, _>> = Task.singleton result
 
     member inline _.Source(result: Choice<_, _>) : Task<Either<_>> =
@@ -653,12 +558,15 @@ type TaskEitherBuilder() =
                     sm.Data.MethodBuilder.Task))
         else
             TaskEitherBuilder.RunDynamic(code)
-
+#endif
             
 [<AutoOpen>]
 module TaskEitherBuilder =
-
+    #if !FABLE_COMPILER 
     let taskEither = TaskEitherBuilder()
+    #else
+    let taskEither = TaskEitherBuilderFableShim()
+    #endif
 
 
 open Microsoft.FSharp.Control

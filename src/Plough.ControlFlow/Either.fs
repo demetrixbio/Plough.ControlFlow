@@ -1,9 +1,5 @@
 ﻿namespace Plough.ControlFlow
 
-#if !FABLE_COMPILER
-open System.Threading.Tasks
-open FSharp.Control.Tasks
-#endif
 
 type FailureMessage =
     | Unknown of string

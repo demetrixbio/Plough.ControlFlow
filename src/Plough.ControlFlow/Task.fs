@@ -3,21 +3,18 @@ namespace Plough.ControlFlow
 open Fable.Core
 
 #if !FABLE_COMPILER
-open System.Threading.Tasks
-open FSharp.Control.Tasks
-
-    type Task<'T> = System.Threading.Tasks.Task<'T>
+type Task<'T> = System.Threading.Tasks.Task<'T>
 #else
-    type Task<'T> = Async<'T>
+type Task<'T> = Async<'T>
 #endif
 
 // Ply Shim for task CE override to remove collision with F# 6 native task CE
 #if !FABLE_COMPILER
 [<AutoOpen>]
 module TaskBuilder =
-    let task = Affine.task
+    let task = Microsoft.FSharp.Control.TaskBuilder.task
 #else
-    let task = async
+    let task = Microsoft.FSharp.Core.ExtraTopLevelOperators.async
 #endif
 
 [<RequireQualifiedAccess>]
@@ -44,8 +41,9 @@ module Task =
             ()
         }
     
-    let ofUnit (t : Task) = task { return! t }
-    
+    #if !FABLE_COMPILER
+    let ofUnit (t : System.Threading.Tasks.Task) = task { return! t }
+    #endif
     
     let apply f x =
         bind (fun f' -> bind (fun x' -> singleton (f' x')) x) f

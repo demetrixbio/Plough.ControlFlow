@@ -1,8 +1,6 @@
 namespace Plough.ControlFlow
 
-#if !FABLE_COMPILER
-open FSharp.Control.Tasks
-#endif
+
 
 [<AutoOpen>]
 module TaskCE =
