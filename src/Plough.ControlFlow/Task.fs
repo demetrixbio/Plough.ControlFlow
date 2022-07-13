@@ -16,14 +16,12 @@ open FSharp.Control.Tasks
 [<AutoOpen>]
 module TaskBuilder =
     let task = Affine.task
-    let vtask = Affine.vtask
-    let unitTask = Affine.unitTask
-    let unitVtask = Affine.unitVtask
+#else
+    let task = async
 #endif
 
 [<RequireQualifiedAccess>]
 module Task =
-    #if !FABLE_COMPILER
     let singleton value = value |> Task.FromResult
 
     let bind (f : 'a -> Task<'b>) (x : Task<'a>) =
@@ -47,32 +45,7 @@ module Task =
         }
     
     let ofUnit (t : Task) = task { return! t }
-        
-    #else
     
-    let singleton value = async { return value }
-    
-    let bind (f : 'a -> Task<'b>) (x : Task<'a>) =
-        async {
-            let! x = x
-            return! f x
-        }
-    
-    /// Takes two tasks and returns a tuple of the pair
-    let zip (a1 : Task<_>) (a2 : Task<_>) =
-        async {
-            let! r1 = a1
-            let! r2 = a2
-            return r1, r2
-        }
-
-    let ignore (x : Task<'a>) : Task<unit> =
-        async {
-            let! _ = x
-            ()
-        }
-    
-    #endif
     
     let apply f x =
         bind (fun f' -> bind (fun x' -> singleton (f' x')) x) f
