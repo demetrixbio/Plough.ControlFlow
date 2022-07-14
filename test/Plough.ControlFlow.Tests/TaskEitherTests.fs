@@ -41,16 +41,15 @@ let WarningWithWarning =
         return! y |> warnIfTooBig 10 // again
     }
 
-
 [<Fact>]
-let ``success, success -> success``() = task {
-    let actual = Ok {Data = 8; Warnings = [];}
-    let! result = SuccessWithSuccess
-    
-    //2 + 2 => 4 & 4 + 4 => 8 < 10
-    Assert.Equal(actual, result)
-}
-
+let ``success, success -> success``() = 
+    taskEither {
+        let actual = 8
+        let! result = SuccessWithSuccess
+        
+        //2 + 2 => 4 & 4 + 4 => 8 < 10
+        Assert.Equal(actual, result)
+    } |> TaskEither.toTask
 [<Fact>]
 let ``success, success with warning -> success with warning``() = task {
     let actual = Ok { Data = 16; Warnings = ["Your number is higher than 7 warning"] }
@@ -70,13 +69,14 @@ let ``success, failure -> failure``() = task {
 }
     
 [<Fact>]
-let ``success with warning, failure -> failure``() = task {
-    let actual = Error <| Validation "Cannot be bigger than 10"
-    let! result = WarningWithFailure
+let ``success with warning, failure -> failure``() = 
+    task {
+        let actual = Error <| Validation "Cannot be bigger than 10"
+        let! result = WarningWithFailure
 
-    //6 + 6 => 12 (> 10) + 12 => 24
-    Assert.Equal(actual, result)
-}
+        //6 + 6 => 12 (> 10) + 12 => 24
+        Assert.Equal(actual, result)
+    }
     
 [<Fact>]
 let ``success with warning, success -> success with warning``() = task {
@@ -92,4 +92,49 @@ let ``success with warning, success with warning -> success with 2 warnings``() 
     let actual = Ok { Data = 48; Warnings = ["Your number is higher than 5 warning"; "Your number is higher than 10 warning"] }
     let! result = WarningWithWarning
     Assert.Equal(actual, result)
+}
+
+let noopDisposable () = {
+    new System.IDisposable with
+        member _.Dispose () = ()
+}
+
+
+[<Fact>]
+let ``Foobar`` () = 
+    taskEither {
+        let doThing () = taskEither {
+            if 4 > 3 then
+                do! Validation "No" |> Error
+            return 3
+        }
+        do! doThing() |> Task.map(fun x ->
+            match x with
+            | Failure _ -> ()
+            | x -> failwithf "why -> %A" x
+        )
+    }
+
+[<Fact>]
+let ``two different bind types`` () = task {
+    let inner input1 input2 =
+        taskEither {
+            use v = noopDisposable ()
+            let! value1 = Either.succeed input1
+
+            if value1 > 3 then
+                return! TaskEither.fail (Validation "lol")
+
+                
+            if value1 > 4 then
+                do! Either.fail (Validation "lol")
+                
+            let! value2 = TaskEither.succeed input2
+            Assert.NotNull(v)
+            Assert.Equal(value1,3)
+            Assert.Equal(value2,box input2)
+            return value1
+        }
+    let! _ = inner 3 "4.0" 
+    ()
 }

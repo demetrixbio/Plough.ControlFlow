@@ -178,8 +178,9 @@ type TaskEitherStateMachineData<'T> =
 
     [<DefaultValue(false)>]
     val mutable MethodBuilder: AsyncTaskEitherMethodBuilder<'T>
-
-    member this.IsResultError = Either.isFailure this.Result
+    member this.IsResultError = 
+        
+        Either.isFailure this.Result
     member this.IsTaskCompleted = this.MethodBuilder.Task.IsCompleted
     member this.AddWarnings s = 
         if isNull this.Warnings then
@@ -259,11 +260,16 @@ type TaskEitherBuilderBase() =
 
     /// Used to represent no-ops like the implicit empty "else" branch of an "if" expression.
     [<DefaultValue>]
-    member inline _.Zero<'TOverall, 'Error>() : TaskEitherCode<'TOverall, unit> = ResumableCode.Zero()
+    member inline _.Zero<'TOverall>() : TaskEitherCode<'TOverall, unit> = 
+        TaskEitherCode<_, _>(fun sm ->
+            // printfn "Return Called --> "
+            sm.Data.Result <- Either.succeed Unchecked.defaultof<_>
+            true)
 
-    member inline _.Return(value: 'T) : TaskEitherCode<'T, 'T> =
+    member inline _.Return(value: 'T) : TaskEitherCode<_,_> =
         TaskEitherCode<'T, _>(fun sm ->
             // printfn "Return Called --> "
+            // if not sm.Data.IsResultError then
             sm.Data.Result <- Ok { Data = value; Warnings = sm.Data.GetWarningsAsList }
             true)
 
@@ -277,14 +283,18 @@ type TaskEitherBuilderBase() =
 
         if sm.Data.IsTaskCompleted then
             true
+        elif sm.Data.IsResultError then 
+            true
         elif shouldContinue then
             task2.Invoke(&sm)
         else
             let rec resume (mf: TaskEitherResumptionFunc<_>) =
                 TaskEitherResumptionFunc<_>(fun sm ->
                     let shouldContinue = mf.Invoke(&sm)
-
+                    
                     if sm.Data.IsTaskCompleted then
+                        true
+                    elif sm.Data.IsResultError then 
                         true
                     elif shouldContinue then
                         task2.Invoke(&sm)
@@ -315,6 +325,7 @@ type TaskEitherBuilderBase() =
                 // printfn "Combine Called After Invoke --> %A " sm.Data.MethodBuilder.Task.Status
 
                 if sm.Data.IsTaskCompleted then true
+                elif sm.Data.IsResultError then true
                 elif __stack_fin then task2.Invoke(&sm)
                 else false
             else
@@ -675,7 +686,7 @@ module TaskEitherCEExtensionsLowPriority =
             unit -> ^Awaiter) and ^Awaiter :> ICriticalNotifyCompletion and ^Awaiter: (member get_IsCompleted:
             unit -> bool) and ^Awaiter: (member GetResult: unit -> Either<'T>)>
             (task: ^TaskLike)
-            : TaskEitherCode<'T, 'T> =
+            : TaskEitherCode<_, _> =
 
             this.Bind(task, (fun v -> this.Return(v)))
 
@@ -777,7 +788,7 @@ module TaskEitherCEExtensionsHighPriority =
 
         member inline _.MergeSources(t1: TaskEither<'T>, t2: TaskEither<'T1>) =  Plough.ControlFlow.TaskEither.zip t1 t2
 
-        member inline this.ReturnFrom(task: TaskEither<'T>) : TaskEitherCode<'T, 'T> =
+        member inline this.ReturnFrom(task: TaskEither<'T>) : TaskEitherCode<_, _> =
             this.Bind(task, (fun v -> this.Return v))
 
         member inline _.Source(s: #seq<_>) = s
@@ -794,16 +805,16 @@ module TaskEitherCEExtensionsMediumPriority =
             do! t
             return Either.succeed ()
         }
+#if NETSTANDARD2_1
+        member inline this.Source(t: ValueTask<'T>) : TaskEither<'T> = t |> Task.mapV Ok
 
-        // member inline this.Source(t: ValueTask<'T>) : TaskEither<'T> = t |> Task.mapV Ok
-
-        // member inline this.Source(t: ValueTask) : TaskEither<unit> = task {
-        //     do! t
-        //     return  Either.succeed ()
-        // }
-
-        // member inline this.Source(computation: Async<'T>) : TaskEither<'T> =
-        //     computation |> Task.map Either.succeed 
+        member inline this.Source(t: ValueTask) : TaskEither<unit> = task {
+            do! t
+            return  Either.succeed ()
+        }
+#endif
+        member inline this.Source(computation: Async<'T>) : TaskEither<'T> =
+            computation |> Async.StartAsTask |> Task.map Either.succeed 
 
     open System.Collections.Generic
     [<AbstractClass>]

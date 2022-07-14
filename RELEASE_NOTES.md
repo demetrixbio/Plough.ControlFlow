@@ -60,8 +60,12 @@
 * Fix TaskEither.For/While and Either.For/While to quit processing cycle on inner error
 * Fix TaskEither.onError / Either.onError - exception error processed only once, rethrow original error
 
-# New in 1.0.0 (Released 2021/12/23)
+## New in 1.0.0 (Released 2021/12/23)
 * F# 6 with native task support
 
-# New in 1.0.1 (Released 2021/12/23)
+## New in 1.0.1 (Released 2021/12/23)
 * Brought back Ply task CE due to transaction scope problem with native task CE - https://github.com/dotnet/fsharp/issues/12556
+
+
+## New in 1.0.2-alpha006 (Released 2022/12/23)
+* Native Task Implementation
