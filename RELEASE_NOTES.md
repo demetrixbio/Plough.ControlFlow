@@ -67,5 +67,5 @@
 * Brought back Ply task CE due to transaction scope problem with native task CE - https://github.com/dotnet/fsharp/issues/12556
 
 
-## New in 1.0.2-alpha006 (Released 2022/12/23)
-* Native Task Implementation
+## New in 2.0.0-beta001 (Released 2022/07/15)
+* F# 6 with native task support

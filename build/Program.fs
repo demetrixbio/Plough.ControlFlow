@@ -72,13 +72,11 @@ let configuration (targets : Target list) =
 
 Target.create "Pack" (fun ctx ->
     let release = ReleaseNotes.load "RELEASE_NOTES.md"
-
-    // // Get release notes with properly-linked version number
-    // let releaseNotes = latestEntry |> Changelog.mkReleaseNotes linkReferenceForLatestEntry
+    let releaseNotes = (String.concat "\n" release.Notes)
     let args =
         [
             sprintf "/p:PackageVersion=%s" release.NugetVersion
-            sprintf "/p:PackageReleaseNotes=\"%s\"" (String.concat "\n" release.Notes)
+            sprintf "/p:PackageReleaseNotes=\"%s\"" releaseNotes
         ]
     DotNet.pack (fun c ->
         { c with

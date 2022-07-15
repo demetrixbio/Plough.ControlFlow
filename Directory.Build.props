@@ -3,7 +3,7 @@
         <!-- summary is not migrated from project.json, but you can use the <Description> property for that if needed. -->
         <PackageTags>f#, fsharp</PackageTags>
         <PackageProjectUrl>https://github.com/demetrixbio/Plough.ControlFlow</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/demetrixbio/Plough.ControlFlow/blob/main/LICENSE.md</PackageLicenseUrl>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <RepositoryType>git</RepositoryType>
         <Authors>demetrix</Authors>
