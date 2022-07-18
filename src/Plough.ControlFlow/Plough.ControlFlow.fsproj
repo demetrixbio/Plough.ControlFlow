@@ -23,10 +23,8 @@
     <Compile Include="TaskEitherOp.fs" />
     <Compile Include="List.fs" />
     <Compile Include="TaskOption.fs" />
-    <Compile Include="TaskOptionCE.fs" />
     <Compile Include="TaskOptionOp.fs" />
     <Compile Include="TaskEitherOption.fs" />
-    <Compile Include="TaskEItherOptionCE.fs" />
     <Compile Include="TaskEitherOptionOp.fs" />
     <Content Include="paket.references" />
   </ItemGroup>
