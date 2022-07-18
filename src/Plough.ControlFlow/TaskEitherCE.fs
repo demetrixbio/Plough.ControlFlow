@@ -579,6 +579,7 @@ module TaskEitherBuilder =
     let taskEither = TaskEitherBuilderFableShim()
     #endif
 
+#if !FABLE_COMPILER 
 
 open Microsoft.FSharp.Control
 open System
@@ -805,17 +806,17 @@ module TaskEitherCEExtensionsMediumPriority =
             do! t
             return Either.succeed ()
         }
-#if NETSTANDARD2_1
+    #if NETSTANDARD2_1
         member inline this.Source(t: ValueTask<'T>) : TaskEither<'T> = t |> Task.mapV Ok
 
         member inline this.Source(t: ValueTask) : TaskEither<unit> = task {
             do! t
             return  Either.succeed ()
         }
-#endif
+    #endif
         member inline this.Source(computation: Async<'T>) : TaskEither<'T> =
             computation |> Async.StartAsTask |> Task.map Either.succeed 
-
+#endif
     open System.Collections.Generic
     [<AbstractClass>]
     type TaskEither() =

@@ -3,6 +3,7 @@ namespace Plough.ControlFlow
 open Fable.Core
 
 #if !FABLE_COMPILER
+open System.Threading.Tasks
 type Task<'T> = System.Threading.Tasks.Task<'T>
 #else
 type Task<'T> = Async<'T>
@@ -13,12 +14,11 @@ type Task<'T> = Async<'T>
 [<AutoOpen>]
 module TaskBuilder =
     let task = Microsoft.FSharp.Control.TaskBuilder.task
-#else
-    let task = Microsoft.FSharp.Core.ExtraTopLevelOperators.async
 #endif
 
 [<RequireQualifiedAccess>]
 module Task =
+    #if !FABLE_COMPILER
     let singleton value = value |> Task.FromResult
 
     let bind (f : 'a -> Task<'b>) (x : Task<'a>) =
@@ -41,8 +41,32 @@ module Task =
             ()
         }
     
-    #if !FABLE_COMPILER
-    let ofUnit (t : System.Threading.Tasks.Task) = task { return! t }
+    let ofUnit (t : Task) = task { return! t }
+        
+    #else
+    
+    let singleton value = async { return value }
+    
+    let bind (f : 'a -> Task<'b>) (x : Task<'a>) =
+        async {
+            let! x = x
+            return! f x
+        }
+    
+    /// Takes two tasks and returns a tuple of the pair
+    let zip (a1 : Task<_>) (a2 : Task<_>) =
+        async {
+            let! r1 = a1
+            let! r2 = a2
+            return r1, r2
+        }
+
+    let ignore (x : Task<'a>) : Task<unit> =
+        async {
+            let! _ = x
+            ()
+        }
+    
     #endif
     
     let apply f x =
