@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Plough.ControlFlow</RootNamespace>
+    <LangVersion>preview</LangVersion>
+    <NoWarn>FS1204;FS3511;FS3513</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Task.fs" />
@@ -21,10 +23,8 @@
     <Compile Include="TaskEitherOp.fs" />
     <Compile Include="List.fs" />
     <Compile Include="TaskOption.fs" />
-    <Compile Include="TaskOptionCE.fs" />
     <Compile Include="TaskOptionOp.fs" />
     <Compile Include="TaskEitherOption.fs" />
-    <Compile Include="TaskEItherOptionCE.fs" />
     <Compile Include="TaskEitherOptionOp.fs" />
     <Content Include="paket.references" />
   </ItemGroup>

@@ -4,21 +4,16 @@ open Fable.Core
 
 #if !FABLE_COMPILER
 open System.Threading.Tasks
-open FSharp.Control.Tasks
-
-    type Task<'T> = System.Threading.Tasks.Task<'T>
+type Task<'T> = System.Threading.Tasks.Task<'T>
 #else
-    type Task<'T> = Async<'T>
+type Task<'T> = Async<'T>
 #endif
 
 // Ply Shim for task CE override to remove collision with F# 6 native task CE
 #if !FABLE_COMPILER
 [<AutoOpen>]
 module TaskBuilder =
-    let task = Affine.task
-    let vtask = Affine.vtask
-    let unitTask = Affine.unitTask
-    let unitVtask = Affine.unitVtask
+    let task = Microsoft.FSharp.Control.TaskBuilder.task
 #endif
 
 [<RequireQualifiedAccess>]

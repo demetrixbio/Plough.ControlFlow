@@ -1,9 +1,5 @@
 namespace Plough.ControlFlow
 
-#if !FABLE_COMPILER
-open FSharp.Control.Tasks
-#endif
-
 [<RequireQualifiedAccess>]
 module List =
 

@@ -58,19 +58,35 @@ Target.create "Test" (fun _ ->
   |> Seq.iter (DotNet.test id)
 )
 
-Target.create "Pack" (fun _ ->
-    let release = ReleaseNotes.load "RELEASE_NOTES.md"
+let isRelease (targets : Target list) =
+    targets
+    |> Seq.map(fun t -> t.Name)
+    |> Seq.exists ((=)"Release")
 
-    Paket.pack(fun p ->
-        { p with
-            ToolType = ToolType.CreateCLIToolReference()
-            BuildConfig = "Release"
-            OutputPath = "bin"
-            MinimumFromLockFile = true
-            IncludeReferencedProjects = true
-            Version = release.AssemblyVersion
-            TemplateFile = "paket.template"
-            ReleaseNotes = String.toLines release.Notes })  
+let configuration (targets : Target list) =
+    let defaultVal = if isRelease targets then "Release" else "Debug"
+    match Environment.environVarOrDefault "CONFIGURATION" defaultVal with
+    | "Debug" -> DotNet.BuildConfiguration.Debug
+    | "Release" -> DotNet.BuildConfiguration.Release
+    | config -> DotNet.BuildConfiguration.Custom config
+
+Target.create "Pack" (fun ctx ->
+    let release = ReleaseNotes.load "RELEASE_NOTES.md"
+    let releaseNotes = (String.concat "\n" release.Notes)
+    let args =
+        [
+            sprintf "/p:PackageVersion=%s" release.NugetVersion
+            sprintf "/p:PackageReleaseNotes=\"%s\"" releaseNotes
+        ]
+    DotNet.pack (fun c ->
+        { c with
+            Configuration = configuration (ctx.Context.AllExecutingTargets)
+            OutputPath = Some distDir
+            Common =
+                c.Common
+                |> DotNet.Options.withAdditionalArgs args
+        }) sln
+
 
 )
 

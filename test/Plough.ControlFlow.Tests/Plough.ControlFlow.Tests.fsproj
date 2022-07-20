@@ -5,7 +5,9 @@
     <RootNamespace>Plough.ControlFlow.Tests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ErrorSpecs.fs" />
     <Compile Include="EitherTests.fs" />
+    <Compile Include="TaskEitherTests.fs" />
     <Content Include="paket.references" />
   </ItemGroup>
   <ItemGroup>

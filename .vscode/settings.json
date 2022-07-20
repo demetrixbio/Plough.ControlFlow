@@ -1,0 +1,5 @@
+{
+    "FSharp.inlayHints.typeAnnotations": false,
+    "FSharp.inlayHints.parameterNames": false,
+    "FSharp.enableMSBuildProjectGraph": false
+}
