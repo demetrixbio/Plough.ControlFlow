@@ -1,5 +1,6 @@
 module Plough.ControlFlow.Tests.TaskEitherTests
 
+open System
 open Plough.ControlFlow
 open Plough.ControlFlow.Tests.ErrorSpecs
 open Xunit
@@ -137,4 +138,16 @@ let ``two different bind types`` () = task {
         }
     let! _ = inner 3 "4.0" 
     ()
+}
+
+[<Fact>]
+let ``toTask includes inner exception`` () = task {
+    let innerException = Exception("test")
+    let! raised = Assert.ThrowsAsync<Exception>(fun () ->
+        taskEither {
+            do! Either.fail (ExceptionFailure innerException)
+        } |> TaskEither.toTask
+    )
+    Assert.NotNull raised.InnerException
+    Assert.Equal(innerException, raised.InnerException)
 }
