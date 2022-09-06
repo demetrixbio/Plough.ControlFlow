@@ -165,7 +165,14 @@ module TaskEither =
         |> Task.map (fun (r1, r2) -> Either.zip r1 r2)
                
     #if !FABLE_COMPILER
-    let toTask f = f |> foldResult id (fun error -> error.ToString() |> failwith) :> System.Threading.Tasks.Task
+    let toTask f =
+        f
+        |> foldResult id (fun error ->
+            match error with
+            | ExceptionFailure exn ->
+                raise <| System.Exception(exn.Message, exn)
+            | _ -> failwith <| error.ToString()
+        ) :> System.Threading.Tasks.Task
     
     /// Synchronously executes task and gets underlying Either<'result>. Not supported by Fable due to JS limitations.
     let runSynchronously (f: TaskEither<_>) = f.ConfigureAwait(false).GetAwaiter().GetResult()
