@@ -66,6 +66,8 @@
 ## New in 1.0.1 (Released 2021/12/23)
 * Brought back Ply task CE due to transaction scope problem with native task CE - https://github.com/dotnet/fsharp/issues/12556
 
-
 ## New in 2.0.0-beta001 (Released 2022/07/15)
 * F# 6 with native task support
+
+## New in 1.0.2 (Released 2022/09/06)
+* Include original exception as an inner exception in TaskEither.toTask. #6
