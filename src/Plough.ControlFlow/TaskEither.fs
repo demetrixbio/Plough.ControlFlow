@@ -153,6 +153,22 @@ module TaskEither =
     let teeError f (taskEither : TaskEither<'a>) : TaskEither<'a> =
         taskEither |> Task.map (Either.teeError f)
 
+    /// If the task-wrapped result is Error, executes the async function on the Error
+    /// value. Passes through the input value.
+    let teeErrorAsync (f : FailureMessage -> Task<unit>) (taskEither : TaskEither<'a>) : TaskEither<'a> =
+    #if !FABLE_COMPILER
+        task {
+    #else
+        async {
+    #endif
+            let! result = taskEither
+            match result with
+            | Ok _ -> ()
+            | Error x ->
+                do! f x
+            return result
+        }
+
     /// If the task-wrapped result is Error and the predicate returns true,
     /// executes the function on the Error value. Passes through the input value.
     let teeErrorIf (predicate : FailureMessage -> bool) (f : FailureMessage -> unit) (taskEither : TaskEither<'a>) : TaskEither<'a> =
