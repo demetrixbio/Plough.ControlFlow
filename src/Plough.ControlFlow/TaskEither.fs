@@ -163,7 +163,20 @@ module TaskEither =
     let zip (x1 : TaskEither<'a>) (x2 : TaskEither<'b>) : TaskEither<'a * 'b> =
         Task.zip x1 x2
         |> Task.map (fun (r1, r2) -> Either.zip r1 r2)
-               
+
+    /// Executes a task, catching any exception and folding it into the error path.
+    let catch (f : unit -> TaskEither<'a>) : TaskEither<'a> =
+    #if !FABLE_COMPILER
+        task {
+    #else
+        async {
+    #endif
+            try
+                return! f()
+            with
+            | exn -> return! exn |> FailureMessage.ExceptionFailure |> returnError
+        }
+
     #if !FABLE_COMPILER
     let toTask f =
         f
@@ -177,34 +190,6 @@ module TaskEither =
     /// Synchronously executes task and gets underlying Either<'result>. Not supported by Fable due to JS limitations.
     let runSynchronously (f: TaskEither<_>) = f.ConfigureAwait(false).GetAwaiter().GetResult()
     
-    let inline onError (onError : FailureMessage -> TaskEither<'b>) (f : unit -> TaskEither<'b>) : TaskEither<'b> =
-        task {
-            let! result =    
-                task {
-                    try return! f()
-                    with
-                    | exn -> return! exn |> FailureMessage.ExceptionFailure |> returnError
-                }
-            
-            match result with
-            | Success _ | SuccessWithWarning _ -> return result
-            | Failure s -> return! onError s
-        }
-    
     #else
     type TaskEither<'a> = Async<Either<'a>>
-    let onError (onError : FailureMessage -> TaskEither<'b>) (f : unit -> TaskEither<'b>) : TaskEither<'b> =
-        async {
-            let! result =    
-                async {
-                    try return! f()
-                    with
-                    | exn -> return! exn |> FailureMessage.ExceptionFailure |> returnError
-                }
-            
-            match result with
-            | Success _ | SuccessWithWarning _ -> return result
-            | Failure s -> return! onError s
-        }
-    
     #endif
