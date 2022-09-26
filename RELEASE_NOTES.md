@@ -68,3 +68,7 @@
 
 ## New in 1.0.2 (Released 2022/09/06)
 * Include original exception as an inner exception in TaskEither.toTask. #6
+
+## New in 1.1.0 (Released 2022/09/26)
+* Replace TaskEither.onError with TaskEither.catch.
+* Add TaskEither.teeErrorAsync.
